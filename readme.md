@@ -1,7 +1,11 @@
 ## Description
 
-Provides a real-time Word Counter for Sublime Text 2. See: http://www.sublimetext.com/
-It can count words on document or in selections. Minimal word length is 3 and will not count digits.
+Provides a real-time Word Count in the status-bar for Sublime Text 2. See: http://www.sublimetext.com/
+
+Count words on document or in selections.
+
+The minimal word length is 3 and is not counting digits.
+
 ## Installation
 
  - Install this repository automatically via "Package Control" http://wbond.net/sublime_packages/package_control
