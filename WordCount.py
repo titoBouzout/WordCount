@@ -38,13 +38,13 @@ class WordCount(sublime_plugin.EventListener):
 	def run(self, asap = False):
 		if Object.modified and (Object.running == False or asap):
 			if Object.view != False:
+				Object.modified = False
 				view = Object.view
 				sel = view.sel()
 				if len(sel) == 1 and sel[0].empty():
 					WordCountThread(view, [view.substr(sublime.Region(0, view.size()))], False).start()
 				else:
 					WordCountThread(view, [view.substr(sublime.Region(s.begin(), s.end())) for s in sel], True).start()
-				Object.modified = False
 			else:
 				self.guess_view()
 
@@ -88,7 +88,6 @@ class WordCountThread(threading.Thread):
 			WordCount().display(self.view, self.count, self.on_selection, self.selection_count)
 		except:
 			pass
-		Object.modified = False
 		Object.running = False
 
 	def count(self, content):
@@ -96,14 +95,14 @@ class WordCountThread(threading.Thread):
 		begin = time.time()
 
 		#=====1
-		# wrdRx = WordCountThread.wrdRx
+		# wrdRx = Object.wrdRx
 		# """counts by counting all the start-of-word characters"""
 		# # regex to find word characters
 		# matchingWrd = False
 		# words = 0;
 		# for ch in content:
 		# 	# test if this char is a word char
-		# 	isWrd = wrdRx.match(ch) != None
+		# 	isWrd = wrdRx(ch) != None
 		# 	#print ch
 		# 	if isWrd and not matchingWrd:
 		# 		# we're moving into a word from not-a-word
