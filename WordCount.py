@@ -6,7 +6,7 @@ import functools
 class Object:
 	view         = False
 	modified     = False
-	wrdRx        = re.compile("\w{3,}")
+	wrdRx        = re.compile("\w{1,}")
 	wrdRx				 = wrdRx.match
 	elapsed_time = 0.4
 	running      = False
