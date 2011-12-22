@@ -14,7 +14,7 @@ The minimal word length is 2 and does not count digits.
 2. Go to menu "Preferences" -> "Browse Packages"
 3. There should be a lot of folders. Create a new folder called "WordCount"
 4. Put this repository into that folder
- - For reference: An example path should be like &hellip;/Packages/WordCount/WordCount.py
+ - For reference: An example path should be like …/Packages/WordCount/WordCount.py
 
 ## Inspiration
 
