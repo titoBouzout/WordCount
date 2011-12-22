@@ -4,7 +4,7 @@ Provides a real-time Word Count in the status-bar for Sublime Text 2. See: http:
 
 Count words on document or in selections.
 
-The minimal word length is 1 and does not count digits.
+The minimal word length is 2 and does not count digits.
 
 ## Installation
 

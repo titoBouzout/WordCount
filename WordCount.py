@@ -6,7 +6,7 @@ import functools
 class Object:
 	view         = False
 	modified     = False
-	wrdRx        = re.compile("\w{1,}")
+	wrdRx        = re.compile("\w{2,}")
 	wrdRx				 = wrdRx.match
 	elapsed_time = 0.4
 	running      = False
@@ -40,11 +40,14 @@ class WordCount(sublime_plugin.EventListener):
 			if Object.view != False:
 				Object.modified = False
 				view = Object.view
-				sel = view.sel()
-				if len(sel) == 1 and sel[0].empty():
-					WordCountThread(view, [view.substr(sublime.Region(0, view.size()))], False).start()
+				if view.size() > 10485760:
+					pass
 				else:
-					WordCountThread(view, [view.substr(sublime.Region(s.begin(), s.end())) for s in sel], True).start()
+					sel = view.sel()
+					if len(sel) == 1 and sel[0].empty():
+						WordCountThread(view, [view.substr(sublime.Region(0, view.size()))], False).start()
+					else:
+						WordCountThread(view, [view.substr(sublime.Region(s.begin(), s.end())) for s in sel], True).start()
 			else:
 				self.guess_view()
 
