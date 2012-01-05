@@ -8,13 +8,7 @@ The minimal word length is 2 and does not count digits.
 
 ## Installation
 
- - Install this repository automatically via "Package Control" http://wbond.net/sublime_packages/package_control
- - Or install manually:
-1. Download this repository
-2. Go to menu "Preferences" -> "Browse Packages"
-3. There should be a lot of folders. Create a new folder called "WordCount"
-4. Put this repository into that folder
- - For reference: An example path should be like …/Packages/WordCount/WordCount.py
+Install this repository automatically via "Package Control" http://wbond.net/sublime_packages/package_control
 
 ## Inspiration
 
