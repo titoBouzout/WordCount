@@ -10,6 +10,12 @@ The minimal word length is 2 and does not count digits.
 
 Install this repository automatically via "Package Control" http://wbond.net/sublime_packages/package_control
 
+## Preferences
+
+ - `enable_live_count` : true 
+ 		
+ 		Allows to control if the live word counter is enabled. Otherwise will be enabled for selections only.
+
 ## Inspiration
 
  - The main loop inspired by sublimelint https://github.com/lunixbochs/sublimelint
