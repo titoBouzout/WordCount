@@ -3,6 +3,9 @@ import time
 import threading, thread
 import functools
 
+s = sublime.load_settings('WordCount.sublime-settings')
+enable_live_count = s.get('enable_live_count',True)
+
 class Object:
 	view         = False
 	modified     = False
@@ -15,6 +18,7 @@ class WordCount(sublime_plugin.EventListener):
 
 	def on_activated(self, view):
 		self.asap(view)
+	
 	def on_post_save(self, view):
 		self.asap(view)
 
@@ -44,10 +48,11 @@ class WordCount(sublime_plugin.EventListener):
 					pass
 				else:
 					sel = view.sel()
-					if len(sel) == 1 and sel[0].empty():
+					if enable_live_count and (len(sel) == 1 and sel[0].empty()):
 						WordCountThread(view, [view.substr(sublime.Region(0, view.size()))], False).start()
 					else:
 						WordCountThread(view, [view.substr(sublime.Region(s.begin(), s.end())) for s in sel], True).start()
+						view.erase_status('WordCount')
 			else:
 				self.guess_view()
 
@@ -57,20 +62,20 @@ class WordCount(sublime_plugin.EventListener):
 		elif on_selection:
 			if selections < 2:
 				if amount == 1:
+					view.set_status('WordCount', "1 word")
+				else:
+					view.set_status('WordCount', "%s words" % (amount))
+			else:
+				if amount == 1:
 					view.set_status('WordCount', "1 word selected")
 				else:
 					view.set_status('WordCount', "%s words selected" % (amount))
-			else:
-				if amount == 1:
-					view.set_status('WordCount', "1 word in %s selections" % (selections))
-				else:
-					view.set_status('WordCount', "%s words in %s selections" % (amount, selections))
 		else:
 			if amount == 1:
-				view.set_status('WordCount', "1 word")
+				view.set_status('WordCount', "1 Word")
 			else:
-				view.set_status('WordCount', "%s words" % (amount))
-
+				view.set_status('WordCount', "%s Words" % (amount))
+				
 class WordCountThread(threading.Thread):
 
 	def __init__(self, view, content, on_selection):
