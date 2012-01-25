@@ -9,7 +9,7 @@ s.add_on_change('enable_live_count', lambda:Object().reload_prefs())
 class Object:
 	view              = False
 	modified          = False
-	wrdRx             = re.compile("\w{2,}")
+	wrdRx             = re.compile("\w{1,}", re.U)
 	wrdRx				      = wrdRx.match
 	elapsed_time      = 0.4
 	running           = False
@@ -37,7 +37,7 @@ class WordCount(sublime_plugin.EventListener):
 		Object.view = view
 		Object.modified = True
 		Object.elapsed_time = 0.4
-		self.run(True)
+		sublime.set_timeout(lambda:WordCount().run(True), 0)
 
 	def guess_view(self):
 		if sublime.active_window() and sublime.active_window().active_view():
@@ -121,7 +121,7 @@ class WordCountThread(threading.Thread):
 
 		#=====2
 		wrdRx = Object.wrdRx
-		words = len([x for x in re.split('\W', content) if False == x.isdigit() and wrdRx(x)])
+		words = len([x for x in content.replace('\n', ' ').split(' ') if False == x.isdigit() and wrdRx(x)])
 
 		Object.elapsed_time = end = time.time() - begin;
 		#print 'Benchmark: '+str(end)
