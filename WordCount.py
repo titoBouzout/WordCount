@@ -63,19 +63,24 @@ class WordCount(sublime_plugin.EventListener):
 				self.guess_view()
 
 	def display(self, view, word_count, on_selection):
+		m = int(word_count / 200)
+		s = int(word_count % 200 / (200 / 60))
+
+		readTime = "~ %dm, %ds reading time" % (m, s)
+
 		if word_count == 0:
 			view.set_status('No words')
 		elif on_selection:
 			if word_count == 1:
 				view.set_status('WordCount', "1 Word selected")
 			else:
-				view.set_status('WordCount', "%s Words selected" % (word_count))
+				view.set_status('WordCount', "%s Words selected, %s" % (word_count, readTime))
 		else:
 			if word_count == 1:
 				view.set_status('WordCount', "1 Word")
 			else:
-				view.set_status('WordCount', "%s Words" % (word_count))
-				
+				view.set_status('WordCount', "%s Words, %s" % (word_count, readTime))
+
 class WordCountThread(threading.Thread):
 
 	def __init__(self, view, content, on_selection):
