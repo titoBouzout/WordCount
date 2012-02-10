@@ -1,4 +1,5 @@
 {
 	"enable_live_count": true,
-	"enable_readtime": true
+	"enable_readtime": true,
+	"readtime_wpm": 200
 }

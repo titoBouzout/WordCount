@@ -23,6 +23,10 @@ Install this repository automatically via "Package Control" http://wbond.net/sub
  		Allows you to control if the estimated reading time is enabled.
  		Reading time is only displayed when there is a time > 1s.
 
+ - `readtime_wpm` : 200 
+ 		
+ 		Sets the WPM to calculate the Estimated Reading Time for the file.
+
 ## Inspiration
 
  - The main loop inspired by sublimelint https://github.com/lunixbochs/sublimelint

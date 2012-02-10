@@ -6,6 +6,7 @@ import functools
 s = sublime.load_settings('WordCount.sublime-settings')
 s.add_on_change('enable_live_count', lambda:Object().reload_prefs())
 s.add_on_change('enable_readtime', lambda:Object().reload_prefs())
+s.add_on_change('readtime_wpm', lambda:Object().reload_prefs())
 
 class Object:
 	view              = False
@@ -16,10 +17,14 @@ class Object:
 	running           = False
 	enable_live_count = s.get('enable_live_count', True)
 	enable_readtime   = s.get('enable_readtime', True)
+	readtime_wpm      = s.get('readtime_wpm', True)
 
 	def reload_prefs(self):
 		Object.enable_live_count = s.get('enable_live_count', True)
 		Object.enable_readtime = s.get('enable_readtime', True)
+		Object.readtime_wpm = s.get('readtime_wpm', True)
+
+		print 
 
 class WordCount(sublime_plugin.EventListener):
 
@@ -66,12 +71,12 @@ class WordCount(sublime_plugin.EventListener):
 				self.guess_view()
 
 	def display(self, view, word_count, on_selection):
-		m = int(word_count / 200)
-		s = int(word_count % 200 / (200 / 60))
+		m = int(word_count / Object.readtime_wpm)
+		s = int(word_count % Object.readtime_wpm / (Object.readtime_wpm / 60))
 
 		# Estimated Reading Time
 		if Object.enable_readtime and s >= 1:
-			readTime = " , ~ %dm, %ds reading time" % (m, s)
+			readTime = " ~%dm, %ds reading time" % (m, s)
 		else:
 			readTime = ""
 
