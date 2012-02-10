@@ -1,3 +1,4 @@
 {
-	"enable_live_count": true
+	"enable_live_count": true,
+	"enable_readtime": true
 }

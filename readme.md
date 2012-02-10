@@ -18,6 +18,11 @@ Install this repository automatically via "Package Control" http://wbond.net/sub
  		
  		Allows to control if the live word counter is enabled. Otherwise will be enabled for selections only.
 
+ - `enable_readtime` : true 
+ 		
+ 		Allows you to control if the estimated reading time is enabled.
+ 		Reading time is only displayed when there is a time > 1s.
+
 ## Inspiration
 
  - The main loop inspired by sublimelint https://github.com/lunixbochs/sublimelint
