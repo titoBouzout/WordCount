@@ -17,14 +17,12 @@ class Object:
 	running           = False
 	enable_live_count = s.get('enable_live_count', True)
 	enable_readtime   = s.get('enable_readtime', True)
-	readtime_wpm      = s.get('readtime_wpm', True)
+	readtime_wpm      = s.get('readtime_wpm', 200)
 
 	def reload_prefs(self):
 		Object.enable_live_count = s.get('enable_live_count', True)
 		Object.enable_readtime = s.get('enable_readtime', True)
-		Object.readtime_wpm = s.get('readtime_wpm', True)
-
-		print 
+		Object.readtime_wpm = s.get('readtime_wpm', 200)
 
 class WordCount(sublime_plugin.EventListener):
 
