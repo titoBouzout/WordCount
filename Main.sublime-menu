@@ -1,0 +1,38 @@
+[
+    {
+        "mnemonic": "n", 
+        "caption": "Preferences", 
+        "id": "preferences", 
+        "children": [
+            {
+                "mnemonic": "P", 
+                "caption": "Package Settings", 
+                "id": "package-settings", 
+                "children": [
+                    {
+                        "caption": "Word Count", 
+                        "children": [
+                            {
+                                "caption": "Settings – Default", 
+                                "args": {
+                                    "file": "${packages}/WordCount/WordCount.sublime-settings"
+                                }, 
+                                "command": "open_file"
+                            }, 
+                            {
+                                "caption": "Settings – User", 
+                                "args": {
+                                    "file": "${packages}/User/WordCount.sublime-settings"
+                                }, 
+                                "command": "open_file"
+                            }, 
+                            {
+                                "caption": "-"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]
