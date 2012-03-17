@@ -1,7 +1,6 @@
 import sublime, sublime_plugin, re
 import time
 import threading, thread
-import functools
 
 s = sublime.load_settings('WordCount.sublime-settings')
 s.add_on_change('enable_live_count', lambda:Object().reload_prefs())
@@ -28,7 +27,7 @@ class WordCount(sublime_plugin.EventListener):
 
 	def on_activated(self, view):
 		self.asap(view)
-	
+
 	def on_post_save(self, view):
 		self.asap(view)
 
@@ -51,7 +50,7 @@ class WordCount(sublime_plugin.EventListener):
 
 	def run(self, asap = False):
 		if Object.modified and (Object.running == False or asap):
-			if Object.view != False:
+			if Object.view != False and not Object.view.settings().get('is_widget'):
 				Object.modified = False
 				view = Object.view
 				if view.size() > 10485760:
@@ -103,7 +102,7 @@ class WordCountThread(threading.Thread):
 		#print 'running:'+str(time.time())
 		Object.running = True
 		self.word_count = sum([self.count(region) for region in self.content])
-		sublime.set_timeout(functools.partial(self.on_done), 0)
+		sublime.set_timeout(lambda:self.on_done(), 0)
 
 	def on_done(self):
 		try:
@@ -149,7 +148,7 @@ def word_count_loop():
 		# sleep time is adaptive, if takes more than 0.4 to calculate the word count
 		# sleep_time becomes elapsed_time*3
 		if Object.running == False:
-			sublime.set_timeout(functools.partial(word_count), 0)
+			sublime.set_timeout(lambda:word_count(), 0)
 		time.sleep((Object.elapsed_time*3 if Object.elapsed_time > 0.4 else 0.4))
 
 if not 'running_word_count_loop' in globals():
