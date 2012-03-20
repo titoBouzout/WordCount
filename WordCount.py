@@ -3,25 +3,21 @@ import time
 import threading, thread
 
 s = sublime.load_settings('WordCount.sublime-settings')
-s.add_on_change('enable_live_count', lambda:Object().reload_prefs())
-s.add_on_change('enable_readtime', lambda:Object().reload_prefs())
-s.add_on_change('readtime_wpm', lambda:Object().reload_prefs())
 
-class Object:
-	view              = False
-	modified          = False
-	wrdRx             = re.compile("\w{1,}", re.U)
-	wrdRx				      = wrdRx.match
-	elapsed_time      = 0.4
-	running           = False
-	enable_live_count = s.get('enable_live_count', True)
-	enable_readtime   = s.get('enable_readtime', True)
-	readtime_wpm      = s.get('readtime_wpm', 200)
-
-	def reload_prefs(self):
-		Object.enable_live_count = s.get('enable_live_count', True)
-		Object.enable_readtime = s.get('enable_readtime', True)
-		Object.readtime_wpm = s.get('readtime_wpm', 200)
+class Pref:
+	def load(self):
+		Pref.view              = False
+		Pref.modified          = False
+		Pref.wrdRx             = re.compile("\w{1,}", re.U)
+		Pref.wrdRx				     = Pref.wrdRx.match
+		Pref.elapsed_time      = 0.4
+		Pref.running           = False
+		Pref.enable_live_count = s.get('enable_live_count', True)
+		Pref.enable_readtime   = s.get('enable_readtime', True)
+		Pref.readtime_wpm      = s.get('readtime_wpm', 200)
+Pref = Pref()
+Pref.load();
+s.add_on_change('reload', lambda:Pref.load())
 
 class WordCount(sublime_plugin.EventListener):
 
@@ -32,33 +28,33 @@ class WordCount(sublime_plugin.EventListener):
 		self.asap(view)
 
 	def on_selection_modified(self, view):
-		Object.modified = True
+		Pref.modified = True
 
 	def on_close(self, view):
-		Object.view = False
-		Object.modified = True
+		Pref.view = False
+		Pref.modified = True
 
 	def asap(self, view):
-		Object.view = view
-		Object.modified = True
-		Object.elapsed_time = 0.4
+		Pref.view = view
+		Pref.modified = True
+		Pref.elapsed_time = 0.4
 		sublime.set_timeout(lambda:WordCount().run(True), 0)
 
 	def guess_view(self):
 		if sublime.active_window() and sublime.active_window().active_view():
-			Object.view = sublime.active_window().active_view()
+			Pref.view = sublime.active_window().active_view()
 
 	def run(self, asap = False):
-		if Object.modified and (Object.running == False or asap):
-			if Object.view != False and not Object.view.settings().get('is_widget'):
-				Object.modified = False
-				view = Object.view
+		if Pref.modified and (Pref.running == False or asap):
+			if Pref.view != False and not Pref.view.settings().get('is_widget'):
+				Pref.modified = False
+				view = Pref.view
 				if view.size() > 10485760:
 					pass
 				else:
 					sel = view.sel()
 					if len(sel) == 1 and sel[0].empty():
-						if Object.enable_live_count:
+						if Pref.enable_live_count:
 							WordCountThread(view, [view.substr(sublime.Region(0, view.size()))], False).start()
 						else:
 							view.erase_status('WordCount')
@@ -68,11 +64,11 @@ class WordCount(sublime_plugin.EventListener):
 				self.guess_view()
 
 	def display(self, view, word_count, on_selection):
-		m = int(word_count / Object.readtime_wpm)
-		s = int(word_count % Object.readtime_wpm / (Object.readtime_wpm / 60))
+		m = int(word_count / Pref.readtime_wpm)
+		s = int(word_count % Pref.readtime_wpm / (Pref.readtime_wpm / 60))
 
 		# Estimated Reading Time
-		if Object.enable_readtime and s >= 1:
+		if Pref.enable_readtime and s >= 1:
 			readTime = " ~%dm, %ds reading time" % (m, s)
 		else:
 			readTime = ""
@@ -100,7 +96,7 @@ class WordCountThread(threading.Thread):
 
 	def run(self):
 		#print 'running:'+str(time.time())
-		Object.running = True
+		Pref.running = True
 		self.word_count = sum([self.count(region) for region in self.content])
 		sublime.set_timeout(lambda:self.on_done(), 0)
 
@@ -109,14 +105,14 @@ class WordCountThread(threading.Thread):
 			WordCount().display(self.view, self.word_count, self.on_selection)
 		except:
 			pass
-		Object.running = False
+		Pref.running = False
 
 	def count(self, content):
 
 		begin = time.time()
 
 		#=====1
-		# wrdRx = Object.wrdRx
+		# wrdRx = Pref.wrdRx
 		# """counts by counting all the start-of-word characters"""
 		# # regex to find word characters
 		# matchingWrd = False
@@ -134,10 +130,10 @@ class WordCountThread(threading.Thread):
 		# 		matchingWrd = False
 
 		#=====2
-		wrdRx = Object.wrdRx
+		wrdRx = Pref.wrdRx
 		words = len([x for x in content.replace('\n', ' ').split(' ') if False == x.isdigit() and wrdRx(x)])
 
-		Object.elapsed_time = end = time.time() - begin;
+		Pref.elapsed_time = end = time.time() - begin;
 		#print 'Benchmark: '+str(end)
 
 		return words
@@ -147,9 +143,9 @@ def word_count_loop():
 	while True:
 		# sleep time is adaptive, if takes more than 0.4 to calculate the word count
 		# sleep_time becomes elapsed_time*3
-		if Object.running == False:
+		if Pref.running == False:
 			sublime.set_timeout(lambda:word_count(), 0)
-		time.sleep((Object.elapsed_time*3 if Object.elapsed_time > 0.4 else 0.4))
+		time.sleep((Pref.elapsed_time*3 if Pref.elapsed_time > 0.4 else 0.4))
 
 if not 'running_word_count_loop' in globals():
 	running_word_count_loop = True
