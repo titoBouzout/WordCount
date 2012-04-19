@@ -1,6 +1,7 @@
 import sublime, sublime_plugin, re
 import time
 import threading, thread
+from os.path import basename
 
 s = sublime.load_settings('WordCount.sublime-settings')
 
@@ -15,7 +16,7 @@ class Pref:
 		Pref.enable_live_count = s.get('enable_live_count', True)
 		Pref.enable_readtime   = s.get('enable_readtime', True)
 		Pref.readtime_wpm      = s.get('readtime_wpm', 200)
-		Pref.whitelist_syntaxes= s.get('whitelist_syntaxes', False)
+		Pref.whitelist         = map(lambda x: x.lower(), s.get('whitelist_syntaxes', []))
 Pref = Pref()
 Pref.load();
 s.add_on_change('reload', lambda:Pref.load())
@@ -23,11 +24,11 @@ s.add_on_change('reload', lambda:Pref.load())
 class WordCount(sublime_plugin.EventListener):
 
 	def should_run_with_syntax(self, view):
-		if Pref.whitelist_syntaxes:
+		if len(Pref.whitelist) > 0:
 			syntax = view.settings().get('syntax')
-			for white in Pref.whitelist_syntaxes:
-				prog = re.compile(white)
-				if prog.search(syntax):
+			syntax = basename(syntax).replace('.tmLanguage', '').lower() if syntax != None else "plain text"
+			for white in Pref.whitelist:
+				if white == syntax:
 					return True
 			return False
 		return True
