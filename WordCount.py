@@ -15,11 +15,22 @@ class Pref:
 		Pref.enable_live_count = s.get('enable_live_count', True)
 		Pref.enable_readtime   = s.get('enable_readtime', True)
 		Pref.readtime_wpm      = s.get('readtime_wpm', 200)
+		Pref.whitelist_syntaxes= s.get('whitelist_syntaxes', False)
 Pref = Pref()
 Pref.load();
 s.add_on_change('reload', lambda:Pref.load())
 
 class WordCount(sublime_plugin.EventListener):
+
+	def should_run_with_syntax(self, view):
+		if Pref.whitelist_syntaxes:
+			syntax = view.settings().get('syntax')
+			for white in Pref.whitelist_syntaxes:
+				prog = re.compile(white)
+				if prog.search(syntax):
+					return True
+			return False
+		return True
 
 	def on_activated(self, view):
 		self.asap(view)
@@ -47,19 +58,20 @@ class WordCount(sublime_plugin.EventListener):
 	def run(self, asap = False):
 		if Pref.modified and (Pref.running == False or asap):
 			if Pref.view != False and not Pref.view.settings().get('is_widget'):
-				Pref.modified = False
-				view = Pref.view
-				if view.size() > 10485760:
-					pass
-				else:
-					sel = view.sel()
-					if len(sel) == 1 and sel[0].empty():
-						if Pref.enable_live_count:
-							WordCountThread(view, [view.substr(sublime.Region(0, view.size()))], False).start()
-						else:
-							view.erase_status('WordCount')
+				if self.should_run_with_syntax(Pref.view):
+					Pref.modified = False
+					view = Pref.view
+					if view.size() > 10485760:
+						pass
 					else:
-						WordCountThread(view, [view.substr(sublime.Region(s.begin(), s.end())) for s in sel], True).start()
+						sel = view.sel()
+						if len(sel) == 1 and sel[0].empty():
+							if Pref.enable_live_count:
+								WordCountThread(view, [view.substr(sublime.Region(0, view.size()))], False).start()
+							else:
+								view.erase_status('WordCount')
+						else:
+							WordCountThread(view, [view.substr(sublime.Region(s.begin(), s.end())) for s in sel], True).start()
 			else:
 				self.guess_view()
 
