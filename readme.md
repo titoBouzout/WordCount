@@ -27,6 +27,12 @@ Install this repository automatically via "Package Control" http://wbond.net/sub
  		
  		Sets the WPM to calculate the Estimated Reading Time for the file.
 
+ - `whitelist_syntaxes` : []
+
+		An array of syntax names that WordCount should run on. 
+		Example: ["Plain text", "Markdown"]
+		If the array is empty, like it is by default, WordCount will run on any syntax.
+
 ## Inspiration
 
  - The main loop inspired by sublimelint https://github.com/lunixbochs/sublimelint
