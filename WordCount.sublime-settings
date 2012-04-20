@@ -1,5 +1,6 @@
 {
 	"enable_live_count": true,
 	"enable_readtime": true,
-	"readtime_wpm": 200
+	"readtime_wpm": 200,
+	"whitelist_syntaxes": []
 }
