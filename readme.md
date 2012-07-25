@@ -14,22 +14,22 @@ Install this repository automatically via "Package Control" http://wbond.net/sub
 
 ## Preferences
 
- - `enable_live_count` : true 
- 		
+ - `enable_live_count` : true
+
  		Allows to control if the live word counter is enabled. Otherwise will be enabled for selections only.
 
- - `enable_readtime` : true 
- 		
+ - `enable_readtime` : false
+
  		Allows you to control if the estimated reading time is enabled.
  		Reading time is only displayed when there is a time > 1s.
 
- - `readtime_wpm` : 200 
- 		
+ - `readtime_wpm` : 200
+
  		Sets the WPM to calculate the Estimated Reading Time for the file.
 
  - `whitelist_syntaxes` : []
 
-		An array of syntax names that WordCount should run on. 
+		An array of syntax names that WordCount should run on.
 		Example: ["Plain text", "Markdown"]
 		If the array is empty, like it is by default, WordCount will run on any syntax.
 
