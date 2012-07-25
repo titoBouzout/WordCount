@@ -4,7 +4,8 @@
 	"enable_readtime": false,
 	"readtime_wpm": 200,
 
-	"enable_line_count": false,
+	"enable_line_word_count": false,
+	"enable_line_char_count": false,
 
 	"whitelist_syntaxes": []
 }

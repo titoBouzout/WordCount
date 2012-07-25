@@ -7,17 +7,18 @@ s = sublime.load_settings('WordCount.sublime-settings')
 
 class Pref:
 	def load(self):
-		Pref.view              = False
-		Pref.modified          = False
-		Pref.wrdRx             = re.compile("\w{1,}", re.U)
-		Pref.wrdRx				     = Pref.wrdRx.match
-		Pref.elapsed_time      = 0.4
-		Pref.running           = False
-		Pref.enable_live_count = s.get('enable_live_count', True)
-		Pref.enable_readtime   = s.get('enable_readtime', False)
-		Pref.enable_line_count = s.get('enable_line_count', False)
-		Pref.readtime_wpm      = s.get('readtime_wpm', 200)
-		Pref.whitelist         = map(lambda x: x.lower(), s.get('whitelist_syntaxes', []))
+		Pref.view                   = False
+		Pref.modified               = False
+		Pref.wrdRx                  = re.compile("\w{1,}", re.U)
+		Pref.wrdRx				          = Pref.wrdRx.match
+		Pref.elapsed_time           = 0.4
+		Pref.running                = False
+		Pref.enable_live_count      = s.get('enable_live_count', True)
+		Pref.enable_readtime        = s.get('enable_readtime', False)
+		Pref.enable_line_word_count = s.get('enable_line_word_count', False)
+		Pref.enable_line_char_count = s.get('enable_line_char_count', False)
+		Pref.readtime_wpm           = s.get('readtime_wpm', 200)
+		Pref.whitelist              = map(lambda x: x.lower(), s.get('whitelist_syntaxes', []))
 
 Pref = Pref()
 Pref.load();
@@ -78,12 +79,18 @@ class WordCount(sublime_plugin.EventListener):
 			else:
 				self.guess_view()
 
-	def display(self, view, word_count, word_count_line, on_selection):
+	def display(self, view, word_count, word_count_line, char_count_line, on_selection):
 		m = int(word_count / Pref.readtime_wpm)
 		s = int(word_count % Pref.readtime_wpm / (Pref.readtime_wpm / 60))
 
 		# word count on line
-		if Pref.enable_line_count and word_count_line > 1:
+		if Pref.enable_line_char_count and char_count_line > 1:
+			chars_count_line = ", %d chars in line" % (char_count_line)
+		else:
+			chars_count_line = ""
+
+		# char count on line
+		if Pref.enable_line_word_count and word_count_line > 1:
 			word_count_line = ", %d Words in line" % (word_count_line)
 		else:
 			word_count_line = ""
@@ -94,19 +101,18 @@ class WordCount(sublime_plugin.EventListener):
 		else:
 			read_time = ""
 
-
 		if word_count == 0:
 			view.set_status('No words')
 		elif on_selection:
 			if word_count == 1:
 				view.set_status('WordCount', "1 Word selected")
 			else:
-				view.set_status('WordCount', "%s Words selected%s%s" % (word_count, word_count_line, read_time))
+				view.set_status('WordCount', "%s Words selected%s%s%s" % (word_count, word_count_line, chars_count_line, read_time))
 		else:
 			if word_count == 1:
 				view.set_status('WordCount', "1 Word")
 			else:
-				view.set_status('WordCount', "%s Words%s%s" % (word_count, word_count_line, read_time))
+				view.set_status('WordCount', "%s Words%s%s%s" % (word_count, word_count_line, chars_count_line, read_time))
 
 class WordCountThread(threading.Thread):
 
@@ -120,13 +126,17 @@ class WordCountThread(threading.Thread):
 	def run(self):
 		#print 'running:'+str(time.time())
 		Pref.running         = True
+
 		self.word_count      = sum([self.count(region) for region in self.content])
 		self.word_count_line = self.count(self.content_line)
+
+		self.chars_in_line = len(self.content_line.strip());
+
 		sublime.set_timeout(lambda:self.on_done(), 0)
 
 	def on_done(self):
 		try:
-			WordCount().display(self.view, self.word_count, self.word_count_line, self.on_selection)
+			WordCount().display(self.view, self.word_count, self.word_count_line, self.chars_in_line, self.on_selection)
 		except:
 			pass
 		Pref.running = False
