@@ -14,9 +14,11 @@ class Pref:
 		Pref.elapsed_time      = 0.4
 		Pref.running           = False
 		Pref.enable_live_count = s.get('enable_live_count', True)
-		Pref.enable_readtime   = s.get('enable_readtime', True)
+		Pref.enable_readtime   = s.get('enable_readtime', False)
+		Pref.enable_line_count = s.get('enable_line_count', False)
 		Pref.readtime_wpm      = s.get('readtime_wpm', 200)
 		Pref.whitelist         = map(lambda x: x.lower(), s.get('whitelist_syntaxes', []))
+
 Pref = Pref()
 Pref.load();
 s.add_on_change('reload', lambda:Pref.load())
@@ -68,23 +70,30 @@ class WordCount(sublime_plugin.EventListener):
 						sel = view.sel()
 						if len(sel) == 1 and sel[0].empty():
 							if Pref.enable_live_count:
-								WordCountThread(view, [view.substr(sublime.Region(0, view.size()))], False).start()
+								WordCountThread(view, [view.substr(sublime.Region(0, view.size()))], view.substr(view.line(view.sel()[0].b)), False).start()
 							else:
 								view.erase_status('WordCount')
 						else:
-							WordCountThread(view, [view.substr(sublime.Region(s.begin(), s.end())) for s in sel], True).start()
+							WordCountThread(view, [view.substr(sublime.Region(s.begin(), s.end())) for s in sel], view.substr(view.line(view.sel()[0].b)), True).start()
 			else:
 				self.guess_view()
 
-	def display(self, view, word_count, on_selection):
+	def display(self, view, word_count, word_count_line, on_selection):
 		m = int(word_count / Pref.readtime_wpm)
 		s = int(word_count % Pref.readtime_wpm / (Pref.readtime_wpm / 60))
 
+		# word count on line
+		if Pref.enable_line_count and word_count_line > 1:
+			word_count_line = ", %d Words in line" % (word_count_line)
+		else:
+			word_count_line = ""
+
 		# Estimated Reading Time
 		if Pref.enable_readtime and s >= 1:
-			readTime = " ~%dm, %ds reading time" % (m, s)
+			read_time = " ~%dm, %ds reading time" % (m, s)
 		else:
-			readTime = ""
+			read_time = ""
+
 
 		if word_count == 0:
 			view.set_status('No words')
@@ -92,30 +101,32 @@ class WordCount(sublime_plugin.EventListener):
 			if word_count == 1:
 				view.set_status('WordCount', "1 Word selected")
 			else:
-				view.set_status('WordCount', "%s Words selected%s" % (word_count, readTime))
+				view.set_status('WordCount', "%s Words selected%s%s" % (word_count, word_count_line, read_time))
 		else:
 			if word_count == 1:
 				view.set_status('WordCount', "1 Word")
 			else:
-				view.set_status('WordCount', "%s Words%s" % (word_count, readTime))
+				view.set_status('WordCount', "%s Words%s%s" % (word_count, word_count_line, read_time))
 
 class WordCountThread(threading.Thread):
 
-	def __init__(self, view, content, on_selection):
+	def __init__(self, view, content, content_line, on_selection):
 		threading.Thread.__init__(self)
 		self.view = view
 		self.content = content
+		self.content_line = content_line
 		self.on_selection = on_selection
 
 	def run(self):
 		#print 'running:'+str(time.time())
-		Pref.running = True
-		self.word_count = sum([self.count(region) for region in self.content])
+		Pref.running         = True
+		self.word_count      = sum([self.count(region) for region in self.content])
+		self.word_count_line = self.count(self.content_line)
 		sublime.set_timeout(lambda:self.on_done(), 0)
 
 	def on_done(self):
 		try:
-			WordCount().display(self.view, self.word_count, self.on_selection)
+			WordCount().display(self.view, self.word_count, self.word_count_line, self.on_selection)
 		except:
 			pass
 		Pref.running = False

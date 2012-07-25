@@ -33,6 +33,10 @@ Install this repository automatically via "Package Control" http://wbond.net/sub
 		Example: ["Plain text", "Markdown"]
 		If the array is empty, like it is by default, WordCount will run on any syntax.
 
+ - `enable_line_count` : false
+
+		Display the count of words found on current line.
+
 ## Inspiration
 
  - The main loop inspired by sublimelint https://github.com/lunixbochs/sublimelint
