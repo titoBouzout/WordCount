@@ -33,7 +33,11 @@ Install this repository automatically via "Package Control" http://wbond.net/sub
 		Example: ["Plain text", "Markdown"]
 		If the array is empty, like it is by default, WordCount will run on any syntax.
 
- - `enable_line_count` : false
+ - `enable_line_word_count` : false
+
+		Display the count of words found on current line.
+
+ - `enable_line_char_count` : false
 
 		Display the count of words found on current line.
 
