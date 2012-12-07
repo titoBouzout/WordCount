@@ -22,6 +22,9 @@ Pref = Pref()
 Pref.load();
 s.add_on_change('reload', lambda:Pref.load())
 
+def helloWorld():
+	return 'test'
+
 class WordCount(sublime_plugin.EventListener):
 
 	def should_run_with_syntax(self, view):
@@ -77,7 +80,7 @@ class WordCount(sublime_plugin.EventListener):
 			else:
 				self.guess_view()
 
-	def display(self, view, word_count, word_count_line, char_count_line, on_selection):
+	def display(self, view, word_count, char_count, word_count_line, char_count_line):
 		m = int(word_count / Pref.readtime_wpm)
 		s = int(word_count % Pref.readtime_wpm / (Pref.readtime_wpm / 60))
 
@@ -98,10 +101,10 @@ class WordCount(sublime_plugin.EventListener):
 			read_time = " ~%dm, %ds reading time" % (m, s)
 		else:
 			read_time = ""
-		if word_count == 1:
-			view.set_status('WordCount', "1 Word")
-		else:
-			view.set_status('WordCount', "%s Words%s%s%s" % (word_count, word_count_line, chars_count_line, read_time))
+		view.set_status('WordCount', "%s/%s%s%s%s" % (self.makePlural('Word', word_count), self.makePlural('Char', char_count), word_count_line, chars_count_line, read_time))
+
+	def makePlural(self, word, count):
+		return "%s %s%s" % (str(count), word, ("s" if count != 1 else ""))
 
 class WordCountThread(threading.Thread):
 
@@ -117,6 +120,7 @@ class WordCountThread(threading.Thread):
 		Pref.running         = True
 
 		self.word_count      = sum([self.count(region) for region in self.content])
+		self.char_count      = sum([len(region) for region in self.content])
 		self.word_count_line = self.count(self.content_line)
 		self.chars_in_line = len(self.content_line.strip());
 
@@ -124,7 +128,7 @@ class WordCountThread(threading.Thread):
 
 	def on_done(self):
 		try:
-			WordCount().display(self.view, self.word_count, self.word_count_line, self.chars_in_line, self.on_selection)
+			WordCount().display(self.view, self.word_count, self.char_count, self.word_count_line, self.chars_in_line)
 		except:
 			pass
 		Pref.running = False
