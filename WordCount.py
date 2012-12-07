@@ -104,7 +104,7 @@ class WordCount(sublime_plugin.EventListener):
 		view.set_status('WordCount', "%s/%s%s%s%s" % (self.makePlural('Word', word_count), self.makePlural('Char', char_count), word_count_line, chars_count_line, read_time))
 
 	def makePlural(self, word, count):
-		return "%s %s%s" % (str(count), word, ("s" if count != 1 else ""))
+		return "%s %s%s" % (count, word, ("s" if count != 1 else ""))
 
 class WordCountThread(threading.Thread):
 
