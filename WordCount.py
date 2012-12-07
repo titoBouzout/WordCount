@@ -11,6 +11,8 @@ class Pref:
 		Pref.modified               = False
 		Pref.elapsed_time           = 0.4
 		Pref.running                = False
+		Pref.wrdRx                  = re.compile("\w{1,}", re.U)
+		Pref.wrdRx                  = Pref.wrdRx.match
 		Pref.enable_live_count      = s.get('enable_live_count', True)
 		Pref.enable_readtime        = s.get('enable_readtime', False)
 		Pref.enable_line_word_count = s.get('enable_line_word_count', False)
@@ -132,29 +134,29 @@ class WordCountThread(threading.Thread):
 
 	def count(self, content):
 
-		begin = time.time()
+		#begin = time.time()
 
 		#=====1
 		# wrdRx = Pref.wrdRx
 		# """counts by counting all the start-of-word characters"""
 		# # regex to find word characters
-		matchingWrd = False
-		words = 0
-		space_symbols = [' ', '\r', '\n']
-		for ch in content:
-		# 	# test if this char is a word char
-			isWrd = ch not in space_symbols
-			if isWrd and not matchingWrd:
-				words = words + 1
-				matchingWrd = True
-			if not isWrd:
-				matchingWrd = False
+		# matchingWrd = False
+		# words = 0
+		# space_symbols = [' ', '\r', '\n']
+		# for ch in content:
+		# # 	# test if this char is a word char
+		# 	isWrd = ch not in space_symbols
+		# 	if isWrd and not matchingWrd:
+		# 		words = words + 1
+		# 		matchingWrd = True
+		# 	if not isWrd:
+		# 		matchingWrd = False
 
 		#=====2
-		#wrdRx = Pref.wrdRx
-		#words = len([x for x in content.replace('\n', ' ').split(' ') if False == x.isdigit() and wrdRx(x)])
+		wrdRx = Pref.wrdRx
+		words = len([x for x in content.replace('\n', ' ').split(' ') if False == x.isdigit() and wrdRx(x)])
 
-		Pref.elapsed_time = end = time.time() - begin;
+		#Pref.elapsed_time = end = time.time() - begin;
 		#print 'Benchmark: '+str(end)
 
 		return words
