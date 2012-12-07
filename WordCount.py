@@ -22,9 +22,6 @@ Pref = Pref()
 Pref.load();
 s.add_on_change('reload', lambda:Pref.load())
 
-def helloWorld():
-	return 'test'
-
 class WordCount(sublime_plugin.EventListener):
 
 	def should_run_with_syntax(self, view):
