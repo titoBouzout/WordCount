@@ -98,10 +98,10 @@ class WordCount(sublime_plugin.EventListener):
 			read_time = " ~%dm, %ds reading time" % (m, s)
 		else:
 			read_time = ""
-			if word_count == 1:
-				view.set_status('WordCount', "1 Word")
-			else:
-				view.set_status('WordCount', "%s Words%s%s%s" % (word_count, word_count_line, chars_count_line, read_time))
+		if word_count == 1:
+			view.set_status('WordCount', "1 Word")
+		else:
+			view.set_status('WordCount', "%s Words%s%s%s" % (word_count, word_count_line, chars_count_line, read_time))
 
 class WordCountThread(threading.Thread):
 
@@ -118,7 +118,6 @@ class WordCountThread(threading.Thread):
 
 		self.word_count      = sum([self.count(region) for region in self.content])
 		self.word_count_line = self.count(self.content_line)
-		self.length          = sum([len(region) for region in self.content])
 		self.chars_in_line = len(self.content_line.strip());
 
 		sublime.set_timeout(lambda:self.on_done(), 0)
