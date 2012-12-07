@@ -103,7 +103,6 @@ class WordCount(sublime_plugin.EventListener):
 
 		if word_count == 0:
 			view.set_status('No words')
-		elif on_selection:
 			if word_count == 1:
 				view.set_status('WordCount', "1 Word selected")
 			else:
