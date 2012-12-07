@@ -45,7 +45,6 @@ Install this repository automatically via "Package Control" http://wbond.net/sub
 
  - The main loop inspired by sublimelint https://github.com/lunixbochs/sublimelint
  - The count inspired by the original WordCount plugin http://code.google.com/p/sublime-text-community-packages/source/browse/#svn%2Ftrunk%2FWordCount committed by mindfiresoftware
- - The base project this version was forked from is https://github.com/sublimetext/wordcount
 
 ## Contributors
 
@@ -55,11 +54,3 @@ Install this repository automatically via "Package Control" http://wbond.net/sub
  - Antony Male
  - Alex Galonsky
  - RikkiMongoose
-
-## Fixes
-
-The following bugs were fixed:
-
- - enable_readtime = true doesn't freeze words' count at 1 anymore
- - The algorythm was rolled back to faster version that doesn't create arrays
- - Not only the words' count, but total characters' count is displayed too (that is very important for a text editor - see http://www.joelonsoftware.com/articles/fog0000000020.html)
