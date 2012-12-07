@@ -47,7 +47,16 @@ Install this repository automatically via "Package Control" http://wbond.net/sub
  - The count inspired by the original WordCount plugin http://code.google.com/p/sublime-text-community-packages/source/browse/#svn%2Ftrunk%2FWordCount committed by mindfiresoftware
  - The base project this version was forked from is https://github.com/sublimetext/wordcount
 
- ## Fixes
+## Contributors
+
+ - Hawken Rives
+ - Yaw Anokwa
+ - James Brooks
+ - Antony Male
+ - Alex Galonsky
+ - RikkiMongoose
+
+## Fixes
 
 The following bugs were fixed:
 
