@@ -9,8 +9,6 @@ class Pref:
 	def load(self):
 		Pref.view                   = False
 		Pref.modified               = False
-		Pref.wrdRx                  = re.compile("\w{1,}", re.U)
-		Pref.wrdRx				          = Pref.wrdRx.match
 		Pref.elapsed_time           = 0.4
 		Pref.running                = False
 		Pref.enable_live_count      = s.get('enable_live_count', True)
@@ -120,7 +118,7 @@ class WordCountThread(threading.Thread):
 
 		self.word_count      = sum([self.count(region) for region in self.content])
 		self.word_count_line = self.count(self.content_line)
-
+		self.length          = sum([len(region) for region in self.content])
 		self.chars_in_line = len(self.content_line.strip());
 
 		sublime.set_timeout(lambda:self.on_done(), 0)
@@ -140,23 +138,21 @@ class WordCountThread(threading.Thread):
 		# wrdRx = Pref.wrdRx
 		# """counts by counting all the start-of-word characters"""
 		# # regex to find word characters
-		# matchingWrd = False
-		# words = 0;
-		# for ch in content:
+		matchingWrd = False
+		words = 0
+		space_symbols = [' ', '\r', '\n']
+		for ch in content:
 		# 	# test if this char is a word char
-		# 	isWrd = wrdRx(ch) != None
-		# 	#print ch
-		# 	if isWrd and not matchingWrd:
-		# 		# we're moving into a word from not-a-word
-		# 		words = words + 1
-		# 		matchingWrd = True
-		# 	if not isWrd:
-		# 		# go back to not matching words
-		# 		matchingWrd = False
+			isWrd = ch not in space_symbols
+			if isWrd and not matchingWrd:
+				words = words + 1
+				matchingWrd = True
+			if not isWrd:
+				matchingWrd = False
 
 		#=====2
-		wrdRx = Pref.wrdRx
-		words = len([x for x in content.replace('\n', ' ').split(' ') if False == x.isdigit() and wrdRx(x)])
+		#wrdRx = Pref.wrdRx
+		#words = len([x for x in content.replace('\n', ' ').split(' ') if False == x.isdigit() and wrdRx(x)])
 
 		Pref.elapsed_time = end = time.time() - begin;
 		#print 'Benchmark: '+str(end)
