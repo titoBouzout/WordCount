@@ -100,14 +100,6 @@ class WordCount(sublime_plugin.EventListener):
 			read_time = " ~%dm, %ds reading time" % (m, s)
 		else:
 			read_time = ""
-
-		if word_count == 0:
-			view.set_status('No words')
-			if word_count == 1:
-				view.set_status('WordCount', "1 Word selected")
-			else:
-				view.set_status('WordCount', "%s Words selected%s%s%s" % (word_count, word_count_line, chars_count_line, read_time))
-		else:
 			if word_count == 1:
 				view.set_status('WordCount', "1 Word")
 			else:
