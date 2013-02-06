@@ -1,6 +1,6 @@
 import sublime, sublime_plugin, re
 import time
-import threading, _thread
+import threading
 from os.path import basename
 
 s = sublime.load_settings('WordCount.sublime-settings')
@@ -18,7 +18,9 @@ class Pref:
 		Pref.enable_line_word_count = s.get('enable_line_word_count', False)
 		Pref.enable_line_char_count = s.get('enable_line_char_count', False)
 		Pref.readtime_wpm           = s.get('readtime_wpm', 200)
-		Pref.whitelist              = [x.lower() for x in s.get('whitelist_syntaxes', [])]
+		# sometimes s.get() is returning None instead of the default?
+		Pref.whitelist              = [x.lower() for x in s.get('whitelist_syntaxes', []) or []]
+		# Pref.whitelist              = map(lambda x: x.lower(), s.get('whitelist_syntaxes', []))
 
 Pref = Pref()
 Pref.load();
@@ -172,4 +174,6 @@ def word_count_loop():
 
 if not 'running_word_count_loop' in globals():
 	running_word_count_loop = True
-	_thread.start_new_thread(word_count_loop, ())
+	t = threading.Thread(target=word_count_loop)
+	t.start()
+
