@@ -17,6 +17,8 @@ class Pref:
 		Pref.enable_readtime        = s.get('enable_readtime', False)
 		Pref.enable_line_word_count = s.get('enable_line_word_count', False)
 		Pref.enable_line_char_count = s.get('enable_line_char_count', False)
+		Pref.enable_count_lines     = s.get('enable_count_lines', False)
+		Pref.enable_count_chars     = s.get('enable_count_chars', False)
 		Pref.readtime_wpm           = s.get('readtime_wpm', 200)
 		# sometimes s.get() is returning None instead of the default?
 		Pref.whitelist              = [x.lower() for x in s.get('whitelist_syntaxes', []) or []]
@@ -81,7 +83,7 @@ class WordCount(sublime_plugin.EventListener):
 			else:
 				self.guess_view()
 
-	def display(self, view, word_count, char_count, word_count_line, char_count_line):
+	def display(self, view, on_selection, word_count, char_count, word_count_line, char_count_line):
 		m = int(word_count / Pref.readtime_wpm)
 		s = int(word_count % Pref.readtime_wpm / (Pref.readtime_wpm / 60))
 
@@ -97,12 +99,31 @@ class WordCount(sublime_plugin.EventListener):
 		else:
 			word_count_line = ""
 
+		# line count
+		if Pref.enable_count_lines:
+			line_count = ", %d Lines" % (view.rowcol(view.size())[0] + 1)
+		else:
+			line_count = ""
+
+		# char count
+		if Pref.enable_count_chars and char_count > 0 and not on_selection:
+			char_count = ", "+self.makePlural('Char', char_count)
+		else:
+			char_count = ""
+
 		# Estimated Reading Time
 		if Pref.enable_readtime and s >= 1:
 			read_time = " ~%dm, %ds reading time" % (m, s)
 		else:
 			read_time = ""
-		view.set_status('WordCount', "%s/%s%s%s%s" % (self.makePlural('Word', word_count), self.makePlural('Char', char_count), word_count_line, chars_count_line, read_time))
+
+		view.set_status('WordCount', "%s%s%s%s%s%s" % (
+		                self.makePlural('Word', word_count),
+		                char_count,
+		                word_count_line,
+		                chars_count_line,
+		                line_count,
+		                read_time))
 
 	def makePlural(self, word, count):
 		return "%s %s%s" % (count, word, ("s" if count != 1 else ""))
@@ -116,20 +137,30 @@ class WordCountThread(threading.Thread):
 		self.content_line = content_line
 		self.on_selection = on_selection
 
+		self.char_count = 0
+		self.word_count_line = 0
+		self.chars_in_line = 0
+
 	def run(self):
 		#print 'running:'+str(time.time())
 		Pref.running         = True
 
 		self.word_count      = sum([self.count(region) for region in self.content])
-		self.char_count      = sum([len(region) for region in self.content])
-		self.word_count_line = self.count(self.content_line)
-		self.chars_in_line = len(self.content_line.strip());
+
+		if Pref.enable_count_chars and not self.on_selection:
+			self.char_count      = sum([len(region) for region in self.content])
+
+		if Pref.enable_line_word_count:
+			self.word_count_line = self.count(self.content_line)
+
+		if Pref.enable_line_char_count:
+			self.chars_in_line = len(self.content_line.strip());
 
 		sublime.set_timeout(lambda:self.on_done(), 0)
 
 	def on_done(self):
 		try:
-			WordCount().display(self.view, self.word_count, self.char_count, self.word_count_line, self.chars_in_line)
+			WordCount().display(self.view, self.on_selection, self.word_count, self.char_count, self.word_count_line, self.chars_in_line)
 		except:
 			pass
 		Pref.running = False
