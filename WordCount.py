@@ -22,6 +22,7 @@ class Pref:
 		Pref.readtime_wpm           = s.get('readtime_wpm', 200)
 		# sometimes s.get() is returning None instead of the default?
 		Pref.whitelist              = [x.lower() for x in s.get('whitelist_syntaxes', []) or []]
+		Pref.blacklist              = [x.lower() for x in s.get('blacklist_syntaxes', []) or []]
 		# Pref.whitelist              = map(lambda x: x.lower(), s.get('whitelist_syntaxes', []))
 
 Pref = Pref()
@@ -31,12 +32,18 @@ s.add_on_change('reload', lambda:Pref.load())
 class WordCount(sublime_plugin.EventListener):
 
 	def should_run_with_syntax(self, view):
+		syntax = view.settings().get('syntax')
+		syntax = basename(syntax).replace('.tmLanguage', '').lower() if syntax != None else "plain text"
+		if len(Pref.blacklist) > 0:
+			for white in Pref.blacklist:
+				if white == syntax:
+					view.erase_status('WordCount');
+					return False
 		if len(Pref.whitelist) > 0:
-			syntax = view.settings().get('syntax')
-			syntax = basename(syntax).replace('.tmLanguage', '').lower() if syntax != None else "plain text"
 			for white in Pref.whitelist:
 				if white == syntax:
 					return True
+			view.erase_status('WordCount');
 			return False
 		return True
 

@@ -10,5 +10,6 @@
 	"enable_count_chars": false,
 	"enable_count_lines": false,
 
-	"whitelist_syntaxes": []
+	"whitelist_syntaxes": [],
+	"blacklist_syntaxes": ["CSS","SQL"]
 }
