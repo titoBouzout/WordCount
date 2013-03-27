@@ -11,5 +11,5 @@
 	"enable_count_lines": false,
 
 	"whitelist_syntaxes": [],
-	"blacklist_syntaxes": ["CSS","SQL"]
+	"blacklist_syntaxes": ["CSS","SQL","JavaScript","PHP"]
 }

@@ -3,7 +3,18 @@ import time
 import threading
 from os.path import basename
 
-s = sublime.load_settings('WordCount.sublime-settings')
+def plugin_loaded():
+	global s, Pref
+	s = sublime.load_settings('WordCount.sublime-settings')
+	Pref = Pref()
+	Pref.load();
+	s.add_on_change('reload', lambda:Pref.load())
+
+	if not 'running_word_count_loop' in globals():
+		global running_word_count_loop
+		running_word_count_loop = True
+		t = threading.Thread(target=word_count_loop)
+		t.start()
 
 class Pref:
 	def load(self):
@@ -20,14 +31,8 @@ class Pref:
 		Pref.enable_count_lines     = s.get('enable_count_lines', False)
 		Pref.enable_count_chars     = s.get('enable_count_chars', False)
 		Pref.readtime_wpm           = s.get('readtime_wpm', 200)
-		# sometimes s.get() is returning None instead of the default?
 		Pref.whitelist              = [x.lower() for x in s.get('whitelist_syntaxes', []) or []]
 		Pref.blacklist              = [x.lower() for x in s.get('blacklist_syntaxes', []) or []]
-		# Pref.whitelist              = map(lambda x: x.lower(), s.get('whitelist_syntaxes', []))
-
-Pref = Pref()
-Pref.load();
-s.add_on_change('reload', lambda:Pref.load())
 
 class WordCount(sublime_plugin.EventListener):
 
@@ -209,9 +214,4 @@ def word_count_loop():
 		if Pref.running == False:
 			sublime.set_timeout(lambda:word_count(), 0)
 		time.sleep((Pref.elapsed_time*3 if Pref.elapsed_time > 0.4 else 0.4))
-
-if not 'running_word_count_loop' in globals():
-	running_word_count_loop = True
-	t = threading.Thread(target=word_count_loop)
-	t.start()
 
