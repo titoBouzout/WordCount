@@ -37,28 +37,34 @@ class Pref:
 class WordCount(sublime_plugin.EventListener):
 
 	def should_run_with_syntax(self, view):
+		if view.settings().has('WordCountShouldRun'):
+			return view.settings().get('WordCountShouldRun')
 		syntax = view.settings().get('syntax')
 		syntax = basename(syntax).replace('.tmLanguage', '').lower() if syntax != None else "plain text"
 		if len(Pref.blacklist) > 0:
 			for white in Pref.blacklist:
 				if white == syntax:
 					view.erase_status('WordCount');
+					view.settings().set('WordCountShouldRun', False)
 					return False
 		if len(Pref.whitelist) > 0:
 			for white in Pref.whitelist:
 				if white == syntax:
+					view.settings().set('WordCountShouldRun', True)
 					return True
 			view.erase_status('WordCount');
+			view.settings().set('WordCountShouldRun', False)
 			return False
+		view.settings().set('WordCountShouldRun', True)
 		return True
 
-	def on_activated(self, view):
+	def on_activated_async(self, view):
 		self.asap(view)
 
-	def on_post_save(self, view):
+	def on_post_save_async(self, view):
 		self.asap(view)
 
-	def on_selection_modified(self, view):
+	def on_selection_modified_async(self, view):
 		Pref.modified = True
 
 	def on_close(self, view):
@@ -85,13 +91,14 @@ class WordCount(sublime_plugin.EventListener):
 						pass
 					else:
 						sel = view.sel()
-						if len(sel) == 1 and sel[0].empty():
-							if Pref.enable_live_count:
-								WordCountThread(view, [view.substr(sublime.Region(0, view.size()))], view.substr(view.line(view.sel()[0].b)), False).start()
+						if sel:
+							if len(sel) == 1 and sel[0].empty():
+								if Pref.enable_live_count:
+									WordCountThread(view, [view.substr(sublime.Region(0, view.size()))], view.substr(view.line(view.sel()[0].b)), False).start()
+								else:
+									view.erase_status('WordCount')
 							else:
-								view.erase_status('WordCount')
-						else:
-							WordCountThread(view, [view.substr(sublime.Region(s.begin(), s.end())) for s in sel], view.substr(view.line(view.sel()[0].b)), True).start()
+								WordCountThread(view, [view.substr(sublime.Region(s.begin(), s.end())) for s in sel], view.substr(view.line(view.sel()[0].b)), True).start()
 			else:
 				self.guess_view()
 
