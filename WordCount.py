@@ -94,11 +94,14 @@ class WordCount(sublime_plugin.EventListener):
 						if sel:
 							if len(sel) == 1 and sel[0].empty():
 								if Pref.enable_live_count:
-									WordCountThread(view, [view.substr(sublime.Region(0, view.size()))], view.substr(view.line(view.sel()[0].b)), False).start()
+									WordCountThread(view, [view.substr(sublime.Region(0, view.size()))], view.substr(view.line(view.sel()[0].end())), False).start()
 								else:
 									view.erase_status('WordCount')
 							else:
-								WordCountThread(view, [view.substr(sublime.Region(s.begin(), s.end())) for s in sel], view.substr(view.line(view.sel()[0].b)), True).start()
+								try:
+									WordCountThread(view, [view.substr(sublime.Region(s.begin(), s.end())) for s in sel], view.substr(view.line(view.sel()[0].end())), True).start()
+								except:
+									pass
 			else:
 				self.guess_view()
 
