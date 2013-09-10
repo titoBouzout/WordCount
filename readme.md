@@ -1,8 +1,8 @@
 ## Description
 
-Provides a real-time Word Count in the status-bar for Sublime Text 2. See: http://www.sublimetext.com/
+Provides a real-time Word Count and character count in the status-bar for Sublime Text 2. See: http://www.sublimetext.com/
 
-Count words on document or in selections.
+Count words and/or characters on document or in selections.
 
 The minimal word length is 1 and does not count digits.
 
@@ -45,8 +45,16 @@ Install this repository automatically via "Package Control" http://wbond.net/sub
 
  - `enable_line_char_count` : false
 
-		Display the count of words found on current line.
+		Display the count of chacters found on current line.
 
+ - `enable_count_lines` : false
+
+ 		Display the number of lines in file
+
+ - `enable_count_chars` : false
+
+		Display the number of characters in file
+		
 ## Inspiration
 
  - The main loop inspired by sublimelint https://github.com/lunixbochs/sublimelint
