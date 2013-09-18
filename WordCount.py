@@ -209,7 +209,7 @@ class WordCountThread(threading.Thread):
 
 		#=====2
 		wrdRx = Pref.wrdRx
-		words = len([x for x in content.replace('\t', ' ').replace('\n', ' ').split(' ') if False == x.isdigit() and wrdRx(x)])
+		words = len([x for x in content.split() if False == x.isdigit() and wrdRx(x)])
 
 		#Pref.elapsed_time = end = time.time() - begin;
 		#print 'Benchmark: '+str(end)
