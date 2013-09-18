@@ -22,7 +22,7 @@ class Pref:
 		Pref.modified               = False
 		Pref.elapsed_time           = 0.4
 		Pref.running                = False
-		Pref.wrdRx                  = re.compile("\w{1,}", re.U)
+		Pref.wrdRx                  = re.compile("^[^\w]?\w{1,}[^\w]?$", re.U)
 		Pref.wrdRx                  = Pref.wrdRx.match
 		Pref.enable_live_count      = s.get('enable_live_count', True)
 		Pref.enable_readtime        = s.get('enable_readtime', False)
@@ -209,7 +209,7 @@ class WordCountThread(threading.Thread):
 
 		#=====2
 		wrdRx = Pref.wrdRx
-		words = len([x for x in content.replace('\n', ' ').split(' ') if False == x.isdigit() and wrdRx(x)])
+		words = len([x for x in content.replace('\t', ' ').replace('\n', ' ').split(' ') if False == x.isdigit() and wrdRx(x)])
 
 		#Pref.elapsed_time = end = time.time() - begin;
 		#print 'Benchmark: '+str(end)
