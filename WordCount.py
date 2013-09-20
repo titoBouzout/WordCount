@@ -22,7 +22,7 @@ class Pref:
 		Pref.modified               = False
 		Pref.elapsed_time           = 0.4
 		Pref.running                = False
-		Pref.wrdRx                  = re.compile("^[^\w]?\w{1,}[^\w]?$", re.U)
+		Pref.wrdRx                  = re.compile("^[^\w]?\w+[^\w]*$", re.U)
 		Pref.wrdRx                  = Pref.wrdRx.match
 		Pref.enable_live_count      = s.get('enable_live_count', True)
 		Pref.enable_readtime        = s.get('enable_readtime', False)
