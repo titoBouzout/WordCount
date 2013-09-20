@@ -54,7 +54,7 @@ Install this repository automatically via "Package Control" http://wbond.net/sub
  - `enable_count_chars` : false
 
 		Display the number of characters in file
-		
+
 ## Inspiration
 
  - The main loop inspired by sublimelint https://github.com/lunixbochs/sublimelint
@@ -62,9 +62,13 @@ Install this repository automatically via "Package Control" http://wbond.net/sub
 
 ## Contributors
 
+ - Liam Cain
+ - Lee Grey
  - Hawken Rives
  - Yaw Anokwa
  - James Brooks
  - Antony Male
  - Alex Galonsky
  - RikkiMongoose
+ - ChrisJefferson
+ - Harry Ng. (From [Word Count Tool](http://wordcounttools.com/))
