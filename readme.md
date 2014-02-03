@@ -1,16 +1,14 @@
+***[Sublime Text 3+](http://www.sublimetext.com/) Package. Install via an updated version of  [Package Control 2+](https://sublime.wbond.net/installation). Just **DON'T** install manually.
+
 ## Description
 
-Provides a real-time Word Count and character count in the status-bar for Sublime Text 2. See: http://www.sublimetext.com/
+Provides a real-time Word Count and character count in the status-bar for Sublime Text. See: http://www.sublimetext.com/
 
 Count words and/or characters on document or in selections.
 
 The minimal word length is 1 and does not count digits.
 
 An estimated reading time is now appended to the end of the word count.
-
-## Installation
-
-Install this repository automatically via "Package Control" http://wbond.net/sublime_packages/package_control
 
 ## Preferences
 
