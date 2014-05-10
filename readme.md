@@ -4,7 +4,7 @@
 
 Provides a real-time Word Count and character count in the status-bar for Sublime Text. See: http://www.sublimetext.com/
 
-Count words and/or characters on document or in selections.
+Count words and/or characters on document or in selections. In characters whitespace is not counted.
 
 The minimal word length is 1 and does not count digits.
 
@@ -43,7 +43,7 @@ An estimated reading time is now appended to the end of the word count.
 
  - `enable_line_char_count` : false
 
-		Display the count of chacters found on current line.
+		Display the count of characters found on current line.
 
  - `enable_count_lines` : false
 

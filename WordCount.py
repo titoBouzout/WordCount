@@ -170,13 +170,13 @@ class WordCountThread(threading.Thread):
 		self.word_count      = sum([self.count(region) for region in self.content])
 
 		if Pref.enable_count_chars and not self.on_selection:
-			self.char_count      = sum([len(region) for region in self.content])
+			self.char_count      = sum([len(''.join(region.split())) for region in self.content])
 
 		if Pref.enable_line_word_count:
 			self.word_count_line = self.count(self.content_line)
 
 		if Pref.enable_line_char_count:
-			self.chars_in_line = len(self.content_line.strip());
+			self.chars_in_line = len(''.join(self.content_line.split()))
 
 		sublime.set_timeout(lambda:self.on_done(), 0)
 
