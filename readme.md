@@ -53,6 +53,10 @@ An estimated reading time is now appended to the end of the word count.
 
 		Display the number of characters in file
 
+ - `word_regexp` : ""
+
+		Word Regular expression. Defaults empty, an internal regular expression is used.
+
 ## Inspiration
 
  - The main loop inspired by sublimelint https://github.com/lunixbochs/sublimelint
