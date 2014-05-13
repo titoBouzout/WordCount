@@ -24,6 +24,10 @@ class Pref:
 		Pref.running                = False
 		Pref.wrdRx                  = re.compile(s.get('word_regexp', "^[^\w]?\w+[^\w]*$"), re.U)
 		Pref.wrdRx                  = Pref.wrdRx.match
+		Pref.splitRx                = s.get('word_split', None)
+		if Pref.splitRx:
+			Pref.splitRx                = re.compile(Pref.splitRx, re.U)
+			Pref.splitRx                = Pref.splitRx.findall
 		Pref.enable_live_count      = s.get('enable_live_count', True)
 		Pref.enable_readtime        = s.get('enable_readtime', False)
 		Pref.enable_line_word_count = s.get('enable_line_word_count', False)
@@ -209,7 +213,11 @@ class WordCountThread(threading.Thread):
 
 		#=====2
 		wrdRx = Pref.wrdRx
-		words = len([x for x in content.replace("'", '').split() if False == x.isdigit() and wrdRx(x)])
+		splitRx = Pref.splitRx
+		if splitRx:
+			words = len([x for x in splitRx(content) if False == x.isdigit() and wrdRx(x)])
+		else:
+			words = len([x for x in content.replace("'", '').split() if False == x.isdigit() and wrdRx(x)])
 
 		#Pref.elapsed_time = end = time.time() - begin;
 		#print 'Benchmark: '+str(end)

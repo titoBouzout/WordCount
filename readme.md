@@ -55,7 +55,11 @@ An estimated reading time is now appended to the end of the word count.
 
  - `word_regexp` : ""
 
-		Word Regular expression. Defaults empty, an internal regular expression is used.
+		Word Regular expression. Defaults empty, an internal regular expression is used. If the portion of text matches this RegExp then the word is counted.
+
+ - `word_split` : ""
+
+		Split portions of text to test later as words with a Regular expression. Defaults to String.split() with no arguments, means that content will trim() and empty values (all whitespaces) are not used. In case of containing some value different than empty, the return of "re.findall" will be used.
 
 ## Inspiration
 
