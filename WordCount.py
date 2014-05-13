@@ -20,6 +20,7 @@ class Pref:
 	def load(self):
 		Pref.view                   = False
 		Pref.modified               = False
+		Pref.selection_is_not_empty = False
 		Pref.elapsed_time           = 0.4
 		Pref.running                = False
 		Pref.wrdRx                  = re.compile(s.get('word_regexp', "^[^\w]?\w+[^\w]*$"), re.U)
@@ -68,8 +69,14 @@ class WordCount(sublime_plugin.EventListener):
 	def on_post_save_async(self, view):
 		self.asap(view)
 
-	def on_selection_modified_async(self, view):
+	def on_modified_async(self, view):
 		Pref.modified = True
+
+	def on_selection_modified_async(self, view):
+		selection_is_not_empty = view.has_non_empty_selection_region()
+		if selection_is_not_empty or Pref.selection_is_not_empty:
+			Pref.modified = True
+		Pref.selection_is_not_empty = selection_is_not_empty
 
 	def on_close(self, view):
 		Pref.view = False
@@ -144,7 +151,7 @@ class WordCount(sublime_plugin.EventListener):
 			read_time = ""
 
 		view.set_status('WordCount', "%s%s%s%s%s%s" % (
-		                self.makePlural('Word', word_count),
+		                '' if not word_count else self.makePlural('Word', word_count),
 		                char_count,
 		                word_count_line,
 		                chars_count_line,
@@ -168,7 +175,7 @@ class WordCountThread(threading.Thread):
 		self.chars_in_line = 0
 
 	def run(self):
-		#print 'running:'+str(time.time())
+		# print ('running:'+str(time.time()))
 		Pref.running         = True
 
 		self.word_count      = sum([self.count(region) for region in self.content])
@@ -193,7 +200,7 @@ class WordCountThread(threading.Thread):
 
 	def count(self, content):
 
-		#begin = time.time()
+		begin = time.time()
 
 		#=====1
 		# wrdRx = Pref.wrdRx
@@ -219,7 +226,7 @@ class WordCountThread(threading.Thread):
 		else:
 			words = len([x for x in content.replace("'", '').split() if False == x.isdigit() and wrdRx(x)])
 
-		#Pref.elapsed_time = end = time.time() - begin;
+		Pref.elapsed_time = end = time.time() - begin;
 		#print 'Benchmark: '+str(end)
 
 		return words
@@ -232,4 +239,3 @@ def word_count_loop():
 		if Pref.running == False:
 			sublime.set_timeout(lambda:word_count(), 0)
 		time.sleep((Pref.elapsed_time*3 if Pref.elapsed_time > 0.4 else 0.4))
-
