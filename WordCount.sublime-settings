@@ -3,6 +3,7 @@
 
 	"enable_readtime": false,
 	"readtime_wpm": 200,
+	"char_ignore_whitespace": true,
 
 	"enable_line_word_count": false,
 	"enable_line_char_count": false,

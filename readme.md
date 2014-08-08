@@ -4,7 +4,7 @@
 
 Provides a real-time Word Count and character count in the status-bar for Sublime Text. See: http://www.sublimetext.com/
 
-Count words and/or characters on document or in selections. In characters whitespace is not counted.
+Count words and/or characters on document or in selections. By default, whitespace is not included in the character count.
 
 The minimal word length is 1 and does not count digits.
 
@@ -36,6 +36,10 @@ An estimated reading time is now appended to the end of the word count.
 		An array of syntax names that WordCount should not run on.
 		Example: ["Plain text", "Markdown"]
 		If the array is empty, like it is by default, WordCount will run on any syntax.
+
+ - `char_ignore_whitespace` : true
+
+		Whether to skip whitespace for the character count.
 
  - `enable_line_word_count` : false
 

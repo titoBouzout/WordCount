@@ -35,6 +35,7 @@ class Pref:
 		Pref.enable_line_char_count = s.get('enable_line_char_count', False)
 		Pref.enable_count_lines     = s.get('enable_count_lines', False)
 		Pref.enable_count_chars     = s.get('enable_count_chars', False)
+		Pref.char_ignore_whitespace = s.get('char_ignore_whitespace', True)
 		Pref.readtime_wpm           = s.get('readtime_wpm', 200)
 		Pref.whitelist              = [x.lower() for x in s.get('whitelist_syntaxes', []) or []]
 		Pref.blacklist              = [x.lower() for x in s.get('blacklist_syntaxes', []) or []]
@@ -181,13 +182,19 @@ class WordCountThread(threading.Thread):
 		self.word_count      = sum([self.count(region) for region in self.content])
 
 		if Pref.enable_count_chars and not self.on_selection:
-			self.char_count      = sum([len(''.join(region.split())) for region in self.content])
+			if Pref.char_ignore_whitespace:
+				self.char_count  = sum([len(''.join(region.split())) for region in self.content])
+			else:
+				self.char_count  = sum([len(region) for region in self.content])
 
 		if Pref.enable_line_word_count:
 			self.word_count_line = self.count(self.content_line)
 
 		if Pref.enable_line_char_count:
-			self.chars_in_line = len(''.join(self.content_line.split()))
+			if Pref.char_ignore_whitespace:
+				self.chars_in_line = len(''.join(self.content_line.split()))
+			else:
+				self.chars_in_line = len(self.content_line.split())
 
 		sublime.set_timeout(lambda:self.on_done(), 0)
 
