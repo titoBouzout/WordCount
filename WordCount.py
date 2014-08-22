@@ -1,13 +1,18 @@
 import sublime, sublime_plugin, re
 import time
 import threading
+from math import ceil as ceil
 from os.path import basename
+
+Pref = {}
+s = {}
 
 def plugin_loaded():
 	global s, Pref
 	s = sublime.load_settings('WordCount.sublime-settings')
 	Pref = Pref()
 	Pref.load();
+	s.clear_on_change('reload')
 	s.add_on_change('reload', lambda:Pref.load())
 
 	if not 'running_word_count_loop' in globals():
@@ -20,7 +25,6 @@ class Pref:
 	def load(self):
 		Pref.view                   = False
 		Pref.modified               = False
-		Pref.selection_is_not_empty = False
 		Pref.elapsed_time           = 0.4
 		Pref.running                = False
 		Pref.wrdRx                  = re.compile(s.get('word_regexp', "^[^\w]?\w+[^\w]*$"), re.U)
@@ -35,10 +39,15 @@ class Pref:
 		Pref.enable_line_char_count = s.get('enable_line_char_count', False)
 		Pref.enable_count_lines     = s.get('enable_count_lines', False)
 		Pref.enable_count_chars     = s.get('enable_count_chars', False)
+		Pref.enable_count_pages     = s.get('enable_count_pages', True)
 		Pref.char_ignore_whitespace = s.get('char_ignore_whitespace', True)
 		Pref.readtime_wpm           = s.get('readtime_wpm', 200)
 		Pref.whitelist              = [x.lower() for x in s.get('whitelist_syntaxes', []) or []]
 		Pref.blacklist              = [x.lower() for x in s.get('blacklist_syntaxes', []) or []]
+		for window in sublime.windows():
+			for view in window.views():
+				view.settings().erase('WordCountShouldRun')
+				view.erase_status('WordCount');
 
 class WordCount(sublime_plugin.EventListener):
 
@@ -47,6 +56,7 @@ class WordCount(sublime_plugin.EventListener):
 			return view.settings().get('WordCountShouldRun')
 		syntax = view.settings().get('syntax')
 		syntax = basename(syntax).replace('.tmLanguage', '').lower() if syntax != None else "plain text"
+
 		if len(Pref.blacklist) > 0:
 			for white in Pref.blacklist:
 				if white == syntax:
@@ -74,10 +84,7 @@ class WordCount(sublime_plugin.EventListener):
 		Pref.modified = True
 
 	def on_selection_modified_async(self, view):
-		selection_is_not_empty = view.has_non_empty_selection_region()
-		if selection_is_not_empty or Pref.selection_is_not_empty:
-			Pref.modified = True
-		Pref.selection_is_not_empty = selection_is_not_empty
+		Pref.modified = True
 
 	def on_close(self, view):
 		Pref.view = False
@@ -121,43 +128,36 @@ class WordCount(sublime_plugin.EventListener):
 		m = int(word_count / Pref.readtime_wpm)
 		s = int(word_count % Pref.readtime_wpm / (Pref.readtime_wpm / 60))
 
-		# word count on line
-		if Pref.enable_line_char_count and char_count_line > 1:
-			chars_count_line = ", %d chars in line" % (char_count_line)
-		else:
-			chars_count_line = ""
+		status = []
 
-		# char count on line
+		if word_count:
+			status.append(self.makePlural('Word', word_count))
+
+		if Pref.enable_count_chars and char_count > 0:
+			status.append(self.makePlural('Char', char_count))
+
 		if Pref.enable_line_word_count and word_count_line > 1:
-			word_count_line = ", %d Words in line" % (word_count_line)
-		else:
-			word_count_line = ""
+			status.append( "%d Words in Line" % (word_count_line))
 
-		# line count
+		if Pref.enable_line_char_count and char_count_line > 1:
+			status.append("%d Chars in Line" % (char_count_line))
+
 		if Pref.enable_count_lines:
-			line_count = ", %d Lines" % (view.rowcol(view.size())[0] + 1)
-		else:
-			line_count = ""
+			lines = (view.rowcol(view.size())[0] + 1)
+			if lines > 1:
+				status.append('%d Lines' % (view.rowcol(view.size())[0] + 1))
 
-		# char count
-		if Pref.enable_count_chars and char_count > 0 and not on_selection:
-			char_count = ", "+self.makePlural('Char', char_count)
-		else:
-			char_count = ""
+		if Pref.enable_count_pages:
+			visible = view.visible_region()
+			rows = (view.rowcol(visible.end())[0]) - (view.rowcol(visible.begin())[0]) +1
+			pages = ceil((view.rowcol(view.size())[0] + 1 ) /  rows)
+			if pages > 1:
+				status.append('%d Pages' % pages)
 
-		# Estimated Reading Time
 		if Pref.enable_readtime and s >= 1:
-			read_time = " ~%dm, %ds reading time" % (m, s)
-		else:
-			read_time = ""
+			status.append("~%dm %ds reading time" % (m, s))
 
-		view.set_status('WordCount', "%s%s%s%s%s%s" % (
-		                '' if not word_count else self.makePlural('Word', word_count),
-		                char_count,
-		                word_count_line,
-		                chars_count_line,
-		                line_count,
-		                read_time))
+		view.set_status('WordCount', ', '.join(status))
 
 	def makePlural(self, word, count):
 		return "%s %s%s" % (count, word, ("s" if count != 1 else ""))
@@ -181,7 +181,7 @@ class WordCountThread(threading.Thread):
 
 		self.word_count      = sum([self.count(region) for region in self.content])
 
-		if Pref.enable_count_chars and not self.on_selection:
+		if Pref.enable_count_chars:
 			if Pref.char_ignore_whitespace:
 				self.char_count  = sum([len(''.join(region.split())) for region in self.content])
 			else:
@@ -207,7 +207,7 @@ class WordCountThread(threading.Thread):
 
 	def count(self, content):
 
-		begin = time.time()
+		# begin = time.time()
 
 		#=====1
 		# wrdRx = Pref.wrdRx
@@ -233,8 +233,8 @@ class WordCountThread(threading.Thread):
 		else:
 			words = len([x for x in content.replace("'", '').split() if False == x.isdigit() and wrdRx(x)])
 
-		Pref.elapsed_time = end = time.time() - begin;
-		#print 'Benchmark: '+str(end)
+		# Pref.elapsed_time = end = time.time() - begin;
+		# print ('Benchmark: '+str(end))
 
 		return words
 

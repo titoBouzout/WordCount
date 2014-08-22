@@ -11,6 +11,8 @@
 	"enable_count_chars": false,
 	"enable_count_lines": false,
 
+	"enable_count_pages": true,
+
 	"whitelist_syntaxes": [],
-	"blacklist_syntaxes": ["CSS","SQL","JavaScript","PHP"]
+	"blacklist_syntaxes": ["CSS","SQL","JavaScript","PHP","Python","JSON"]
 }

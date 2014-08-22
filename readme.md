@@ -57,6 +57,10 @@ An estimated reading time is now appended to the end of the word count.
 
 		Display the number of characters in file
 
+ - `enable_count_pages` : true
+
+		Display the number of pages in file
+
  - `word_regexp` : ""
 
 		Word Regular expression. Defaults empty, an internal regular expression is used. If the portion of text matches this RegExp then the word is counted.
