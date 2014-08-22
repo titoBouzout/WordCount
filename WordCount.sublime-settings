@@ -14,5 +14,15 @@
 	"enable_count_pages": true,
 
 	"whitelist_syntaxes": [],
-	"blacklist_syntaxes": ["CSS","SQL","JavaScript","PHP","Python","JSON"]
+	"blacklist_syntaxes": ["CSS","SQL","JavaScript","Python","PHP","JSON"],
+
+	"strip": {
+		"php":[
+			"<[^>]*>"
+		],
+		"html":[
+			"<[^>]*>"
+		]
+	}
+
 }

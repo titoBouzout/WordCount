@@ -44,6 +44,8 @@ class Pref:
 		Pref.readtime_wpm           = s.get('readtime_wpm', 200)
 		Pref.whitelist              = [x.lower() for x in s.get('whitelist_syntaxes', []) or []]
 		Pref.blacklist              = [x.lower() for x in s.get('blacklist_syntaxes', []) or []]
+		Pref.strip                  = s.get('strip', [])
+
 		for window in sublime.windows():
 			for view in window.views():
 				view.settings().erase('WordCountShouldRun')
@@ -56,6 +58,7 @@ class WordCount(sublime_plugin.EventListener):
 			return view.settings().get('WordCountShouldRun')
 		syntax = view.settings().get('syntax')
 		syntax = basename(syntax).replace('.tmLanguage', '').lower() if syntax != None else "plain text"
+		view.settings().set('WordCountSyntax', syntax)
 
 		if len(Pref.blacklist) > 0:
 			for white in Pref.blacklist:
@@ -175,9 +178,17 @@ class WordCountThread(threading.Thread):
 		self.word_count_line = 0
 		self.chars_in_line = 0
 
+		self.syntax = view.settings().get('WordCountSyntax')
+
 	def run(self):
 		# print ('running:'+str(time.time()))
 		Pref.running         = True
+
+		if self.syntax and self.syntax in Pref.strip:
+			for item in Pref.strip[self.syntax]:
+				for k in range(len(self.content)):
+					self.content[k] = re.sub(item, '', self.content[k])
+				self.content_line = re.sub(item, '', self.content_line)
 
 		self.word_count      = sum([self.count(region) for region in self.content])
 
