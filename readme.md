@@ -69,6 +69,20 @@ An estimated reading time is now appended to the end of the word count.
 
 		Split portions of text to test later as words with a Regular expression. Defaults to String.split() with no arguments, means that content will trim() and empty values (all whitespaces) are not used. In case of containing some value different than empty, the return of "re.findall" will be used.
 
+ - `split`: {}
+
+		Remove regex patterns by syntax. Use lowercase for the syntax names.
+
+		Example to ignore all tags, including comments, from HTML:
+
+		```
+		"strip": {
+			"html": [
+				"<[^>]*>"
+			]
+		}
+		```
+
 ## Inspiration
 
  - The main loop inspired by sublimelint https://github.com/lunixbochs/sublimelint
