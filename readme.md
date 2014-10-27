@@ -5,7 +5,7 @@
 1. Follow the instruction on [https://sublime.wbond.net/installation](https://sublime.wbond.net/installation) to install [Package Control 2+](https://sublime.wbond.net/installation).
 2. In Sublime Text, press <kbd>ctrl+shift+P</kbd> (Win, Linux) or <kbd>cmd+shift+P</kbd> (OS X) to open *Package Control*.
 3. Choose `Package Control: Install Package`.
-4. This should work! Enjoy.
+4. This will work. Enjoy.
 
 ## Description
 
