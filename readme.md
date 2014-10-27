@@ -1,4 +1,11 @@
-***[Sublime Text 3+](http://www.sublimetext.com/) Package. Install via an updated version of  [Package Control 2+](https://sublime.wbond.net/installation). Just **DON'T** install manually.
+**This is a [Sublime Text 3+](http://www.sublimetext.com/) Package. Please install via an updated version of  [Package Control 2+](https://sublime.wbond.net/installation) as instructed below. *DO NOT* install manually.**
+
+## Installation
+
+1. If you don't have it already, follow the instructions on [https://sublime.wbond.net/installation](https://sublime.wbond.net/installation) to install Package Control 2+.
+2. In Sublime Text, press <kbd>Ctrl+Shift+P</kbd> (Win, Linux) or <kbd>⌘⇧p</kbd> (OS X) to open the command palette.
+3. Choose `Package Control: Install Package`.
+4. Select **WordCount**.
 
 ## Description
 
