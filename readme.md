@@ -107,3 +107,4 @@ An estimated reading time is now appended to the end of the word count.
  - RikkiMongoose
  - ChrisJefferson
  - Harry Ng. (From [Word Count Tool](http://wordcounttools.com/))
+ - MangleKuo
