@@ -68,6 +68,10 @@ An estimated reading time is now appended to the end of the word count.
 
 		Display the number of pages in file
 
+ - `words_per_page` : 300
+
+		Sets the number of words per page used to calculate number of pages
+
  - `word_regexp` : ""
 
 		Word Regular expression. Defaults empty, an internal regular expression is used. If the portion of text matches this RegExp then the word is counted.
