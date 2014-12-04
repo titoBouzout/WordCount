@@ -151,11 +151,7 @@ class WordCount(sublime_plugin.EventListener):
 				status.append('%d Lines' % (view.rowcol(view.size())[0] + 1))
 
 		if Pref.enable_count_pages:
-			visible = view.visible_region()
-			rows = (view.rowcol(visible.end())[0]) - (view.rowcol(visible.begin())[0]) +1
-			pages = ceil((view.rowcol(view.size())[0] + 1 ) /  rows)
-			if pages > 1:
-				status.append('%d Pages' % pages)
+			status.append(self.makePlural('Pages', word_count / 300))
 
 		if Pref.enable_readtime and s >= 1:
 			status.append("~%dm %ds reading time" % (m, s))
