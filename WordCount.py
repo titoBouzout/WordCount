@@ -41,6 +41,7 @@ class Pref:
 		Pref.enable_count_chars     = s.get('enable_count_chars', False)
 		Pref.enable_count_pages     = s.get('enable_count_pages', True)
 		Pref.words_per_page         = s.get('words_per_page', 300)
+		Pref.page_count_mode_count_words = s.get('page_count_mode_count_words', True)
 		Pref.char_ignore_whitespace = s.get('char_ignore_whitespace', True)
 		Pref.readtime_wpm           = s.get('readtime_wpm', 200)
 		Pref.whitelist              = [x.lower() for x in s.get('whitelist_syntaxes', []) or []]
@@ -151,10 +152,15 @@ class WordCount(sublime_plugin.EventListener):
 			if lines > 1:
 				status.append('%d Lines' % (view.rowcol(view.size())[0] + 1))
 
-		if Pref.enable_count_pages:
-			if Pref.words_per_page != 0:
-				page_count = ceil(word_count / Pref.words_per_page)
-				status.append(self.makePlural('Pages', page_count))
+		if Pref.enable_count_pages and word_count > 0:
+			if not Pref.page_count_mode_count_words or Pref.words_per_page < 1:
+				visible = view.visible_region()
+				rows = (view.rowcol(visible.end())[0]) - (view.rowcol(visible.begin())[0]) +1
+				pages = ceil((view.rowcol(view.size())[0] + 1 ) /  rows)
+			else:
+				pages = ceil(word_count / Pref.words_per_page)
+			if pages > 1:
+				status.append(self.makePlural('Pages', pages))
 
 		if Pref.enable_readtime and s >= 1:
 			status.append("~%dm %ds reading time" % (m, s))

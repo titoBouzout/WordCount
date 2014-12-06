@@ -68,6 +68,10 @@ An estimated reading time is now appended to the end of the word count.
 
 		Display the number of pages in file
 
+ - `page_count_mode_count_words` : true
+
+		Sets the page count mode to words per page
+
  - `words_per_page` : 300
 
 		Sets the number of words per page used to calculate number of pages
@@ -112,3 +116,4 @@ An estimated reading time is now appended to the end of the word count.
  - ChrisJefferson
  - Harry Ng. (From [Word Count Tool](http://wordcounttools.com/))
  - MangleKuo
+ - Nick Cody
