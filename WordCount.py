@@ -160,7 +160,7 @@ class WordCount(sublime_plugin.EventListener):
 			else:
 				pages = ceil(word_count / Pref.words_per_page)
 			if pages > 1:
-				status.append(self.makePlural('Pages', pages))
+				status.append(self.makePlural('Page', pages))
 
 		if Pref.enable_readtime and s >= 1:
 			status.append("~%dm %ds reading time" % (m, s))
