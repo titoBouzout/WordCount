@@ -18,6 +18,7 @@ The minimal word length is 1 and does not count digits.
 An estimated reading time is now appended to the end of the word count.
 
 ## Preferences
+Located under Sublime Text>Preferences>Package Settings>Settings — User
 
  - `enable_live_count` : true
 
