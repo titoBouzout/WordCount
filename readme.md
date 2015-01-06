@@ -19,6 +19,7 @@ An estimated reading time is now appended to the end of the word count.
 
 ## Preferences
 Located under Sublime Text>Preferences>Package Settings>Settings — User
+(You probably need to copy the default settings from the uneditable Sublime Text>Preferences>Package Settings>Settings — **Default**)
 
  - `enable_live_count` : true
 
