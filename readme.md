@@ -119,3 +119,4 @@ Located under Sublime Text>Preferences>Package Settings>Settings — User
  - Harry Ng. (From [Word Count Tool](http://wordcounttools.com/))
  - MangleKuo
  - Nick Cody
+ - Amanda Neumann
