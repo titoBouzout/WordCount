@@ -217,7 +217,7 @@ class WordCountThread(threading.Thread):
 			if Pref.char_ignore_whitespace:
 				self.chars_in_line = len(''.join(self.content_line.split()))
 			else:
-				self.chars_in_line = len(self.content_line.split())
+				self.chars_in_line = len(self.content_line)
 
 		sublime.set_timeout(lambda:self.on_done(), 0)
 
