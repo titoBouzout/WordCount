@@ -13,7 +13,7 @@
 
 	"enable_count_pages": true,
 	"words_per_page": 300,
-	"page_count_mode_count_words": false,
+	"page_count_mode_count_words": true,
 
 	"whitelist_syntaxes": [],
 	"blacklist_syntaxes": ["CSS", "SQL", "JavaScript", "Python", "PHP", "JSON"],
