@@ -27,7 +27,7 @@ class Pref:
 		Pref.modified               = False
 		Pref.elapsed_time           = 0.4
 		Pref.running                = False
-		Pref.wrdRx                  = re.compile(s.get('word_regexp', "^[^\w]?\w+[^\w]*$"), re.U)
+		Pref.wrdRx                  = re.compile(s.get('word_regexp', "^[^\w]?`?\w+[^\w]*$"), re.U)
 		Pref.wrdRx                  = Pref.wrdRx.match
 		Pref.splitRx                = s.get('word_split', None)
 		if Pref.splitRx:
