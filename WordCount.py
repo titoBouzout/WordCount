@@ -27,7 +27,7 @@ class Pref:
 		Pref.modified               = False
 		Pref.elapsed_time           = 0.4
 		Pref.running                = False
-		Pref.wrdRx                  = re.compile(s.get('word_regexp', "^[^\w]?`?\w+[^\w]*$"), re.U)
+		Pref.wrdRx                  = re.compile(s.get('word_regexp', "^[^\w]?`*\w+[^\w]*$"), re.U)
 		Pref.wrdRx                  = Pref.wrdRx.match
 		Pref.splitRx                = s.get('word_split', None)
 		if Pref.splitRx:
@@ -59,7 +59,7 @@ class WordCount(sublime_plugin.EventListener):
 		if view.settings().has('WordCountShouldRun'):
 			return view.settings().get('WordCountShouldRun')
 		syntax = view.settings().get('syntax')
-		syntax = basename(syntax).replace('.tmLanguage', '').lower() if syntax != None else "plain text"
+		syntax = basename(syntax).split('.')[0].lower() if syntax != None else "plain text"
 		view.settings().set('WordCountSyntax', syntax)
 
 		if len(Pref.blacklist) > 0:
@@ -256,7 +256,7 @@ class WordCountThread(threading.Thread):
 		if splitRx:
 			words = len([1 for x in splitRx(content) if False == x.isdigit() and wrdRx(x)])
 		else:
-			words = len([1 for x in content.replace("'", '').split() if False == x.isdigit() and wrdRx(x)])
+			words = len([1 for x in content.replace("'", '').replace('—', ' ').replace('–', ' ').replace('-', ' ').split() if False == x.isdigit() and wrdRx(x)])
 
 		# Pref.elapsed_time = end = time.time() - begin;
 		# print ('Benchmark: '+str(end))

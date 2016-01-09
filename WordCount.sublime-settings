@@ -18,6 +18,7 @@
 	"whitelist_syntaxes": [],
 	"blacklist_syntaxes": ["CSS", "SQL", "JavaScript", "Python", "PHP", "JSON"],
 
+	/* please use lowercase for the syntax names in the following section: */
 	"strip": {
 		"php": [
 			"<[^>]*>"
