@@ -6,6 +6,7 @@ from os.path import basename
 
 Pref = {}
 s = {}
+wsd = {'modified':True, 'selection':True, 'syntax':'plain text','changes':-1,'status':-1}
 
 def plugin_loaded():
 	global s, Pref
@@ -24,15 +25,16 @@ def plugin_loaded():
 class Pref:
 	def load(self):
 		Pref.view                   = False
-		Pref.modified               = False
 		Pref.elapsed_time           = 0.4
 		Pref.running                = False
+
 		Pref.wrdRx                  = re.compile(s.get('word_regexp', "^[^\w]?`*\w+[^\w]*$"), re.U)
 		Pref.wrdRx                  = Pref.wrdRx.match
 		Pref.splitRx                = s.get('word_split', None)
 		if Pref.splitRx:
-			Pref.splitRx                = re.compile(Pref.splitRx, re.U)
-			Pref.splitRx                = Pref.splitRx.findall
+			Pref.splitRx            = re.compile(Pref.splitRx, re.U)
+			Pref.splitRx            = Pref.splitRx.findall
+
 		Pref.enable_live_count      = s.get('enable_live_count', True)
 		Pref.enable_readtime        = s.get('enable_readtime', False)
 		Pref.enable_line_word_count = s.get('enable_line_word_count', False)
@@ -40,6 +42,7 @@ class Pref:
 		Pref.enable_count_lines     = s.get('enable_count_lines', False)
 		Pref.enable_count_chars     = s.get('enable_count_chars', False)
 		Pref.enable_count_pages     = s.get('enable_count_pages', True)
+
 		Pref.words_per_page         = s.get('words_per_page', 300)
 		Pref.page_count_mode_count_words = s.get('page_count_mode_count_words', True)
 		Pref.char_ignore_whitespace = s.get('char_ignore_whitespace', True)
@@ -50,33 +53,32 @@ class Pref:
 
 		for window in sublime.windows():
 			for view in window.views():
-				view.settings().erase('WordCountShouldRun')
 				view.erase_status('WordCount');
+				view.settings().erase('WordCount')
 
 class WordCount(sublime_plugin.EventListener):
 
 	def should_run_with_syntax(self, view):
-		if view.settings().has('WordCountShouldRun'):
-			return view.settings().get('WordCountShouldRun')
-		syntax = view.settings().get('syntax')
+		vs =  view.settings()
+
+		syntax = vs.get('syntax')
 		syntax = basename(syntax).split('.')[0].lower() if syntax != None else "plain text"
-		view.settings().set('WordCountSyntax', syntax)
+
+		ws = vs.get('WordCount', wsd)
+		ws['syntax'] = syntax
+		vs.set('WordCount', ws)
 
 		if len(Pref.blacklist) > 0:
 			for white in Pref.blacklist:
 				if white == syntax:
 					view.erase_status('WordCount');
-					view.settings().set('WordCountShouldRun', False)
 					return False
 		if len(Pref.whitelist) > 0:
 			for white in Pref.whitelist:
 				if white == syntax:
-					view.settings().set('WordCountShouldRun', True)
 					return True
 			view.erase_status('WordCount');
-			view.settings().set('WordCountShouldRun', False)
 			return False
-		view.settings().set('WordCountShouldRun', True)
 		return True
 
 	def on_activated_async(self, view):
@@ -86,50 +88,64 @@ class WordCount(sublime_plugin.EventListener):
 		self.asap(view)
 
 	def on_modified_async(self, view):
-		Pref.modified = True
+		vs = view.settings()
+		ws = vs.get('WordCount', wsd)
+		ws['modified'] = True
+		vs.set('WordCount', ws)
 
 	def on_selection_modified_async(self, view):
-		Pref.modified = True
+		vs = view.settings()
+		ws = vs.get('WordCount', wsd)
+		ws['selection'] =  True
+		vs.set('WordCount', ws)
 
 	def on_close(self, view):
 		Pref.view = False
-		Pref.modified = True
 
 	def asap(self, view):
 		Pref.view = view
-		Pref.modified = True
 		Pref.elapsed_time = 0.4
 		sublime.set_timeout(lambda:WordCount().run(True), 0)
+
+	def run(self, asap = False):
+		if not Pref.view:
+			self.guess_view()
+		else:
+			view = Pref.view
+			vs = view.settings()
+			ws = vs.get('WordCount', wsd)
+			if vs.get('is_widget') or not ws: # (if not ws)WTF, happens when closing a view
+				self.guess_view()
+			else:
+				if (ws['modified'] or ws['selection']) and (Pref.running == False or asap) and self.should_run_with_syntax(view):
+					sel = view.sel()
+					if sel:
+						if len(sel) == 1 and sel[0].empty():
+							if not Pref.enable_live_count or view.size() > 10485760:
+								view.erase_status('WordCount')
+							elif view.change_count() != ws['changes']:
+								ws['changes'] = view.change_count()
+								#  print('running:'+str(view.change_count()))
+								WordCountThread(view, [view.substr(sublime.Region(0, view.size()))], view.substr(view.line(view.sel()[0].end())), False).start()
+							else:
+								# print('running from cache:'+str(view.change_count()))
+								view.set_status('WordCount', self.makePlural('Word', ws['count'] ))
+						else:
+							try:
+								WordCountThread(view, [view.substr(sublime.Region(s.begin(), s.end())) for s in sel], view.substr(view.line(view.sel()[0].end())), True).start()
+							except:
+								pass
+						ws['modified'] = False
+						ws['selection'] = False
+						vs.set('WordCount', ws)
+
 
 	def guess_view(self):
 		if sublime.active_window() and sublime.active_window().active_view():
 			Pref.view = sublime.active_window().active_view()
 
-	def run(self, asap = False):
-		if Pref.modified and (Pref.running == False or asap):
-			if Pref.view != False and not Pref.view.settings().get('is_widget'):
-				if self.should_run_with_syntax(Pref.view):
-					Pref.modified = False
-					view = Pref.view
-					if view.size() > 10485760:
-						pass
-					else:
-						sel = view.sel()
-						if sel:
-							if len(sel) == 1 and sel[0].empty():
-								if Pref.enable_live_count:
-									WordCountThread(view, [view.substr(sublime.Region(0, view.size()))], view.substr(view.line(view.sel()[0].end())), False).start()
-								else:
-									view.erase_status('WordCount')
-							else:
-								try:
-									WordCountThread(view, [view.substr(sublime.Region(s.begin(), s.end())) for s in sel], view.substr(view.line(view.sel()[0].end())), True).start()
-								except:
-									pass
-			else:
-				self.guess_view()
-
 	def display(self, view, on_selection, word_count, char_count, word_count_line, char_count_line):
+
 		m = int(word_count / Pref.readtime_wpm)
 		s = int(word_count % Pref.readtime_wpm / (Pref.readtime_wpm / 60))
 
@@ -192,7 +208,8 @@ class WordCountThread(threading.Thread):
 		self.word_count_line = 0
 		self.chars_in_line = 0
 
-		self.syntax = view.settings().get('WordCountSyntax')
+		ws = view.settings().get('WordCount', wsd)
+		self.syntax = ws['syntax']
 
 	def run(self):
 		# print ('running:'+str(time.time()))
@@ -220,6 +237,12 @@ class WordCountThread(threading.Thread):
 				self.chars_in_line = len(''.join(self.content_line.split()))
 			else:
 				self.chars_in_line = len(self.content_line)
+
+		if not self.on_selection:
+			vs = self.view.settings()
+			ws = vs.get('WordCount', wsd)
+			ws['count'] = self.word_count
+			vs.set('WordCount', ws)
 
 		sublime.set_timeout(lambda:self.on_done(), 0)
 
