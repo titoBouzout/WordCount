@@ -1,11 +1,4 @@
-**This is a [Sublime Text 3+](http://www.sublimetext.com/) Package. Please install via an updated version of  [Package Control 2+](https://sublime.wbond.net/installation) as instructed below. *DO NOT* install manually.**
 
-## Installation
-
-1. If you don't have it already, follow the instructions on [https://sublime.wbond.net/installation](https://sublime.wbond.net/installation) to install Package Control 2+.
-2. In Sublime Text, press <kbd>Ctrl+Shift+P</kbd> (Win, Linux) or <kbd>⌘⇧p</kbd> (OS X) to open the command palette.
-3. Choose `Package Control: Install Package`.
-4. Select **WordCount**.
 
 ## Description
 
@@ -17,22 +10,27 @@ The minimal word length is 1 and does not count digits.
 
 An estimated reading time is now appended to the end of the word count.
 
+## Installation
+
+Download or clone the contents of this repository to a folder named exactly as the package name into the Packages/ folder of ST.
+
+
 ## Preferences
 Located under Sublime Text>Preferences>Package Settings>Settings — User
 (You probably need to copy the default settings from the uneditable Sublime Text>Preferences>Package Settings>Settings — **Default**)
 
  - `enable_live_count` : true
 
- 		Allows to control if the live word counter is enabled. Otherwise will be enabled for selections only.
+		Allows to control if the live word counter is enabled. Otherwise will be enabled for selections only.
 
  - `enable_readtime` : false
 
- 		Allows you to control if the estimated reading time is enabled.
- 		Reading time is only displayed when there is a time > 1s.
+		Allows you to control if the estimated reading time is enabled.
+		Reading time is only displayed when there is a time > 1s.
 
  - `readtime_wpm` : 200
 
- 		Sets the WPM to calculate the Estimated Reading Time for the file.
+		Sets the WPM to calculate the Estimated Reading Time for the file.
 
  - `whitelist_syntaxes` : []
 
@@ -60,7 +58,7 @@ Located under Sublime Text>Preferences>Package Settings>Settings — User
 
  - `enable_count_lines` : false
 
- 		Display the number of lines in file
+		Display the number of lines in file
 
  - `enable_count_chars` : false
 
