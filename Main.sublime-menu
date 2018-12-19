@@ -13,21 +13,12 @@
                         "caption": "Word Count",
                         "children": [
                             {
-                                "caption": "Settings – Default",
+                                "caption": "Settings",
+                                "command": "edit_settings",
                                 "args": {
-                                    "file": "${packages}/WordCount/WordCount.sublime-settings"
-                                },
-                                "command": "open_file"
-                            },
-                            {
-                                "caption": "Settings – User",
-                                "args": {
-                                    "file": "${packages}/User/WordCount.sublime-settings"
-                                },
-                                "command": "open_file"
-                            },
-                            {
-                                "caption": "-"
+                                    "base_file": "${packages}/WordCount/WordCount.sublime-settings",
+                                    "default": "{\n$0\n}\n"
+                                }
                             }
                         ]
                     }
