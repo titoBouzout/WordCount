@@ -12,8 +12,17 @@ An estimated reading time is now appended to the end of the word count.
 
 ## Installation
 
-Download or clone the contents of this repository to a folder named exactly as the package name into the Packages/ folder of ST.
+Zipped file:
+1. Locate the Packages directory for Sublime Text.
+2. Download the zipped contents of this repository into Packages.
+3. Unzip the zipped file. It will create a new directory in Packages.
+4. Re-start Sublime Text.
 
+Cloned files:
+1. Locate the Packages directory for Sublime Text.
+2. In the Packages directory, create a sub-directory called WordCount.
+3. Clone the contents of this repository to your new WordCount folder.
+4. Re-start Sublime Text.
 
 ## Preferences
 Located under Sublime Text>Preferences>Package Settings>Settings — User
